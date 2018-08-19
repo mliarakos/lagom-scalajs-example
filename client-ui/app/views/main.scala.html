@@ -1,0 +1,14 @@
+@(mode: play.api.Mode)
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=EDGE"/>
+        <meta charset="utf-8"/>
+        <meta http-equiv="Content-Type" content="text/html"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Lagom ScalaJS Example</title>
+    </head>
+    <body>
+        <script type="text/javascript" src="@routes.Assets.at(s"client-js-${if(mode == play.api.Mode.Prod) "opt" else "fastopt"}.js")"></script>
+    </body>
+</html>
