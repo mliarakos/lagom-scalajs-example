@@ -8,7 +8,7 @@ import org.scalajs.dom.window
 
 class ExampleClientApplication(hostname: String = window.location.hostname)
   extends LagomClientApplication("example-client") with StaticServiceLocatorComponents {
-  override def staticServiceUri: URI = URI.create(s"http://$hostname:64349")
+  override def staticServiceUri: URI = URI.create(s"http://$hostname:58440")
 }
 
 object ExampleClient {
