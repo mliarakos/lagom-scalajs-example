@@ -14,10 +14,10 @@ lazy val commonJsSettings = commonSettings ++ Seq(
 
 val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.1" % Provided
 
-lazy val `service-api` = crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Full)
-  .in(file("service-api"))
+lazy val `example-api` = crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Full)
+  .in(file("example-api"))
   .settings(
-    name := "service-api"
+    name := "example-api"
   )
   .jvmSettings(commonSettings: _*)
   .jvmSettings(
@@ -32,14 +32,14 @@ lazy val `service-api` = crossProject(JSPlatform, JVMPlatform).crossType(CrossTy
     )
   )
 
-lazy val `service-api-jvm` = `service-api`.jvm
+lazy val `example-api-jvm` = `example-api`.jvm
 
-lazy val `service-api-js` = `service-api`.js
+lazy val `example-api-js` = `example-api`.js
 
-lazy val `service-impl` = project.in(file("service-impl"))
+lazy val `example-impl` = project.in(file("example-impl"))
   .settings(commonSettings: _*)
   .settings(
-    name := "service-impl",
+    name := "example-impl",
     libraryDependencies ++= Seq(
       filters,
       lagomScaladslPersistenceCassandra,
@@ -47,7 +47,7 @@ lazy val `service-impl` = project.in(file("service-impl"))
     )
   )
   .enablePlugins(LagomScala)
-  .dependsOn(`service-api-jvm`)
+  .dependsOn(`example-api-jvm`)
 
 lazy val `client-js` = project.in(file("client-js"))
   .settings(commonJsSettings: _*)
@@ -61,7 +61,7 @@ lazy val `client-js` = project.in(file("client-js"))
     scalaJSUseMainModuleInitializer := true
   )
   .enablePlugins(ScalaJSPlugin, ScalaJSWeb)
-  .dependsOn(`service-api-js`)
+  .dependsOn(`example-api-js`)
 
 lazy val `client-ui` = project.in(file("client-ui"))
   .settings(commonSettings: _*)
@@ -78,7 +78,7 @@ lazy val `client-ui` = project.in(file("client-ui"))
   .enablePlugins(PlayScala, LagomPlay)
 
 lazy val `lagom-scalajs-example` = project.in(file("."))
-  .aggregate(`service-api-jvm`, `service-api-js`, `service-impl`, `client-js`, `client-ui`)
+  .aggregate(`example-api-jvm`, `example-api-js`, `example-impl`, `client-js`, `client-ui`)
   .settings(
     publish := {},
     publishLocal := {}

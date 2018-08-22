@@ -1,8 +1,9 @@
-package org.mliarakos.example
+package org.mliarakos.example.impl
 
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import com.lightbend.lagom.scaladsl.server.ServerServiceCall
+import org.mliarakos.example.api.{ExampleService, Pong}
 
 import scala.concurrent.Future
 import scala.concurrent.duration._

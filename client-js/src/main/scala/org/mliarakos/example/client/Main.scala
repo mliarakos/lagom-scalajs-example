@@ -1,7 +1,7 @@
 package org.mliarakos.example.client
 
 import akka.stream.scaladsl.Source
-import org.mliarakos.example.{Ping, Pong}
+import org.mliarakos.example.api.{Ping, Pong}
 import org.scalajs.dom.ext.AjaxException
 import org.scalajs.dom.html.Input
 import org.scalajs.dom.raw.HTMLElement

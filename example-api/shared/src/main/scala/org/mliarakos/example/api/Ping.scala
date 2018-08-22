@@ -1,4 +1,4 @@
-package org.mliarakos.example
+package org.mliarakos.example.api
 
 import play.api.libs.json.{Format, Json}
 
