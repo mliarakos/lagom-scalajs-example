@@ -68,6 +68,7 @@ lazy val `client-ui` = project.in(file("client-ui"))
   .settings(
     name := "client-ui",
     libraryDependencies ++= Seq(
+      "org.webjars" % "bootstrap" % "4.1.3",
       filters,
       macwire
     ),
@@ -77,7 +78,7 @@ lazy val `client-ui` = project.in(file("client-ui"))
   .enablePlugins(PlayScala, LagomPlay)
 
 lazy val `lagom-scalajs-example` = project.in(file("."))
-  .aggregate(`service-api-jvm`, `service-api-js`, `client-js`, `client-ui`)
+  .aggregate(`service-api-jvm`, `service-api-js`, `service-impl`, `client-js`, `client-ui`)
   .settings(
     publish := {},
     publishLocal := {}

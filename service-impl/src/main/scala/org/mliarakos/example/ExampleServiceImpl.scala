@@ -22,10 +22,9 @@ class ExampleServiceImpl extends ExampleService {
     Future.successful(Pong(message))
   }
 
-  override def tick(intervalMs: Int) = ServerServiceCall { tickMessage =>
-    Future.successful(Source.tick(
-      intervalMs.milliseconds, intervalMs.milliseconds, tickMessage
-    ).mapMaterializedValue(_ => NotUsed))
+  override def tick(interval: Int) = ServerServiceCall { message =>
+    val source = Source.tick(interval.milliseconds, interval.milliseconds, message).mapMaterializedValue(_ => NotUsed)
+    Future.successful(source)
   }
 
   override def echo = ServerServiceCall { source =>

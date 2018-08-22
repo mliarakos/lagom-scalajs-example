@@ -7,6 +7,8 @@
         <meta http-equiv="Content-Type" content="text/html"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <title>Lagom ScalaJS Example</title>
+
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("lib/bootstrap/css/bootstrap.min.css")"/>
     </head>
     <body>
         <script type="text/javascript" src="@routes.Assets.at(s"client-js-${if(mode == play.api.Mode.Prod) "opt" else "fastopt"}.js")"></script>

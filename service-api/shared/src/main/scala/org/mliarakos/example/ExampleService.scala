@@ -20,13 +20,13 @@ trait ExampleService extends Service {
   override def descriptor: Descriptor = {
     import Service._
     named("example").withCalls(
-      restCall(Method.GET,  "/ex/greeting", greeting),
-      restCall(Method.GET,  "/ex/hello/:name", hello _),
-      restCall(Method.POST, "/ex/ping", ping),
-      pathCall("/ex/tick/:interval", tick _),
-      pathCall("/ex/echo", echo)
+      restCall(Method.GET, "/greeting", greeting),
+      restCall(Method.GET, "/hello/:name", hello _),
+      restCall(Method.POST, "/ping", ping),
+      pathCall("/tick/:interval", tick _),
+      pathCall("/echo", echo)
     ).withAcls(
-      ServiceAcl.forMethodAndPathRegex(Method.OPTIONS, "/ex.*")
+      ServiceAcl.forMethodAndPathRegex(Method.OPTIONS, "/.*")
     ).withAutoAcl(true)
   }
 
