@@ -12,6 +12,6 @@ class ExampleClientApplication(hostname: String = window.location.hostname)
 }
 
 object ExampleClient {
-  val app = new ExampleClientApplication()
-  val client: ExampleService = app.serviceClient.implement[ExampleService]
+  val application: ExampleClientApplication = new ExampleClientApplication()
+  val client: ExampleService = application.serviceClient.implement[ExampleService]
 }

@@ -1,5 +1,6 @@
 package org.mliarakos.example.client
 
+import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import org.mliarakos.example.api.{Ping, Pong}
 import org.scalajs.dom.ext.AjaxException
@@ -12,6 +13,8 @@ import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.util.{Failure, Success}
 
 object Main {
+
+  private implicit val materializer: Materializer = ExampleClient.application.materializer
 
   private val client = ExampleClient.client
   private val successAlertClasses = "alert alert-success mb-0"
@@ -70,7 +73,7 @@ object Main {
         response.runForeach(message => {
           val badge = span(`class` := "badge badge-light mr-1")(message)
           output.appendChild(badge.render)
-        })(ExampleClient.app.materializer)
+        })
       case Failure(exception) =>
         handleException(exception)
     })
@@ -88,7 +91,7 @@ object Main {
         response.runForeach(message => {
           val badge = span(`class` := "badge badge-light mr-1")(message)
           output.appendChild(badge.render)
-        })(ExampleClient.app.materializer)
+        })
       case Failure(exception) =>
         handleException(exception)
     })
