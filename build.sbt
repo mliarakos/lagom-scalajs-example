@@ -28,13 +28,9 @@ lazy val `example-api` = crossProject(JSPlatform, JVMPlatform).crossType(CrossTy
   .jsSettings(commonJsSettings: _*)
   .jsSettings(
     libraryDependencies ++= Seq(
-      "com.lightbend.lagom" %%% "lagom-scaladsl-api" % "1.5.0-SNAPSHOT"
+      "com.lightbend.lagom" %%% "lagom-scaladsl-api" % "1.6.0-SNAPSHOT"
     )
   )
-
-lazy val `example-api-jvm` = `example-api`.jvm
-
-lazy val `example-api-js` = `example-api`.js
 
 lazy val `example-impl` = project.in(file("example-impl"))
   .settings(commonSettings: _*)
@@ -47,28 +43,28 @@ lazy val `example-impl` = project.in(file("example-impl"))
     )
   )
   .enablePlugins(LagomScala)
-  .dependsOn(`example-api-jvm`)
+  .dependsOn(`example-api`.jvm)
 
 lazy val `client-js` = project.in(file("client-js"))
   .settings(commonJsSettings: _*)
   .settings(
     name := "client-js",
     libraryDependencies ++= Seq(
-      "com.lightbend.lagom" %%% "lagom-scaladsl-client" % "1.5.0-SNAPSHOT",
+      "com.lightbend.lagom" %%% "lagom-scaladsl-client" % "1.6.0-SNAPSHOT",
       "com.lihaoyi" %%% "scalatags" % "0.6.7",
-      "org.scala-js" %%% "scalajs-dom" % "0.9.6"
+      "org.scala-js" %%% "scalajs-dom" % "0.9.7"
     ),
     scalaJSUseMainModuleInitializer := true
   )
   .enablePlugins(ScalaJSPlugin, ScalaJSWeb)
-  .dependsOn(`example-api-js`)
+  .dependsOn(`example-api`.js)
 
 lazy val `client-ui` = project.in(file("client-ui"))
   .settings(commonSettings: _*)
   .settings(
     name := "client-ui",
     libraryDependencies ++= Seq(
-      "org.webjars" % "bootstrap" % "4.1.3",
+      "org.webjars" % "bootstrap" % "4.3.1",
       filters,
       macwire
     ),
@@ -78,7 +74,7 @@ lazy val `client-ui` = project.in(file("client-ui"))
   .enablePlugins(PlayScala, LagomPlay)
 
 lazy val `lagom-scalajs-example` = project.in(file("."))
-  .aggregate(`example-api-jvm`, `example-api-js`, `example-impl`, `client-js`, `client-ui`)
+  .aggregate(`example-api`.jvm, `example-api`.js, `example-impl`, `client-js`, `client-ui`)
   .settings(
     publish := {},
     publishLocal := {}
