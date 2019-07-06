@@ -14,17 +14,12 @@ lazy val commonJsSettings = commonSettings ++ Seq(
 
 val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.1" % Provided
 
-lazy val `example-api` = crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Full)
+lazy val `example-api` = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Full)
   .in(file("example-api"))
-  .settings(
-    name := "example-api"
-  )
+  .settings(name := "example-api")
   .jvmSettings(commonSettings: _*)
-  .jvmSettings(
-    libraryDependencies ++= Seq(
-      lagomScaladslApi
-    )
-  )
+  .jvmSettings(libraryDependencies ++= Seq(lagomScaladslApi))
   .jsSettings(commonJsSettings: _*)
   .jsSettings(
     libraryDependencies ++= Seq(
@@ -32,20 +27,18 @@ lazy val `example-api` = crossProject(JSPlatform, JVMPlatform).crossType(CrossTy
     )
   )
 
-lazy val `example-impl` = project.in(file("example-impl"))
+lazy val `example-impl` = project
+  .in(file("example-impl"))
   .settings(commonSettings: _*)
   .settings(
     name := "example-impl",
-    libraryDependencies ++= Seq(
-      filters,
-      lagomScaladslPersistenceCassandra,
-      macwire
-    )
+    libraryDependencies ++= Seq(filters, macwire)
   )
   .enablePlugins(LagomScala)
   .dependsOn(`example-api`.jvm)
 
-lazy val `client-js` = project.in(file("client-js"))
+lazy val `client-js` = project
+  .in(file("client-js"))
   .settings(commonJsSettings: _*)
   .settings(
     name := "client-js",
@@ -59,7 +52,8 @@ lazy val `client-js` = project.in(file("client-js"))
   .enablePlugins(ScalaJSPlugin, ScalaJSWeb)
   .dependsOn(`example-api`.js)
 
-lazy val `client-ui` = project.in(file("client-ui"))
+lazy val `client-ui` = project
+  .in(file("client-ui"))
   .settings(commonSettings: _*)
   .settings(
     name := "client-ui",
@@ -73,8 +67,15 @@ lazy val `client-ui` = project.in(file("client-ui"))
   )
   .enablePlugins(PlayScala, LagomPlay)
 
-lazy val `lagom-scalajs-example` = project.in(file("."))
-  .aggregate(`example-api`.jvm, `example-api`.js, `example-impl`, `client-js`, `client-ui`)
+lazy val `lagom-scalajs-example` = project
+  .in(file("."))
+  .aggregate(
+    `example-api`.jvm,
+    `example-api`.js,
+    `example-impl`,
+    `client-js`,
+    `client-ui`
+  )
   .settings(
     publish := {},
     publishLocal := {}
