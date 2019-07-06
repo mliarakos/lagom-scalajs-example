@@ -65,7 +65,7 @@ This example calls the `hello` end point of the service:
 def hello(name: String): ServiceCall[NotUsed, String]
 ```
 
-This is a service call that uses a String path parameter. The service returns a greeting using the provided name parameter.
+This is a service call that uses a String path parameter. The service returns a greeting using the user provided name parameter.
 
 In the `client-js` project:
 
@@ -100,7 +100,7 @@ object Pong {
 }
 ```
 
-Like the Hello example, the service returns a greeting using a user provided name. The difference is that this example uses serialized requests and responses. The service returns a greeting in the `Pong` response using the name in the `Ping` request.
+Like the Hello example, the service returns a greeting using the user provided name. The difference is that this example uses serialized requests and responses. The service returns a greeting in the `Pong` response using the name in the `Ping` request.
 
 In the `client-js` project:
 
@@ -142,7 +142,7 @@ This example calls the `echo` end point of the service:
 def echo: ServiceCall[Source[String, NotUsed], Source[String, NotUsed]]
 ```
 
-This is a service call that uses a streaming request and response. The client creates a `Source` that repeats a message for a user defined number of times. The `Source` is streamed to the service that returns another `Source` that echos back all the messages.
+This is a service call that uses a streaming request and response. The client creates a `Source` that repeats a message for a user defined number of times. The `Source` is streamed to the service and the service returns another `Source` that echos back all the messages.
 
 In the `client-js` project:
 
