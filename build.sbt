@@ -3,10 +3,8 @@ import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
 scalaVersion in ThisBuild := "2.12.8"
 
-lazy val commonSettings = Seq(
-  organization := "org.mliarakos.lagom-scalajs-example",
-  version := "0.1.0"
-)
+lazy val commonSettings =
+  Seq(organization := "org.mliarakos.lagom-scalajs-example", version := "0.1.0")
 
 lazy val commonJsSettings = commonSettings ++ Seq(
   scalacOptions += "-P:scalajs:sjsDefinedByDefault"
@@ -23,7 +21,7 @@ lazy val `example-api` = crossProject(JSPlatform, JVMPlatform)
   .jsSettings(commonJsSettings: _*)
   .jsSettings(
     libraryDependencies ++= Seq(
-      "com.lightbend.lagom" %%% "lagom-scaladsl-api" % "1.6.0-SNAPSHOT"
+      "org.mliarakos.lagomjs" %%% "lagomjs-scaladsl-api" % "0.1.0-SNAPSHOT"
     )
   )
 
@@ -43,7 +41,7 @@ lazy val `client-js` = project
   .settings(
     name := "client-js",
     libraryDependencies ++= Seq(
-      "com.lightbend.lagom" %%% "lagom-scaladsl-client" % "1.6.0-SNAPSHOT",
+      "org.mliarakos.lagomjs" %%% "lagomjs-scaladsl-client" % "0.1.0-SNAPSHOT",
       "com.lihaoyi" %%% "scalatags" % "0.6.7",
       "org.scala-js" %%% "scalajs-dom" % "0.9.7"
     ),
@@ -76,7 +74,4 @@ lazy val `lagom-scalajs-example` = project
     `client-js`,
     `client-ui`
   )
-  .settings(
-    publish := {},
-    publishLocal := {}
-  )
+  .settings(publish := {}, publishLocal := {})
