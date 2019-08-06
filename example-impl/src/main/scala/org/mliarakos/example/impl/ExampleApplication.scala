@@ -11,7 +11,7 @@ import play.filters.cors.CORSComponents
 import scala.collection.immutable._
 
 abstract class ExampleApplication(context: LagomApplicationContext)
-  extends LagomApplication(context)
+    extends LagomApplication(context)
     with AhcWSComponents
     with CORSComponents {
 

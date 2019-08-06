@@ -16,85 +16,97 @@ object Main {
 
   private implicit val materializer: Materializer = ExampleClient.application.materializer
 
-  private val client = ExampleClient.client
+  private val client              = ExampleClient.client
   private val successAlertClasses = "alert alert-success mb-0"
 
   private def handleException(exception: Throwable): Unit = {
     exception match {
       case AjaxException(xhr) => console.error(xhr)
-      case _ => console.error(exception.toString)
+      case _                  => console.error(exception.toString)
     }
   }
 
   private def greetingOnClick(event: Event): Unit = {
-    client.greeting.invoke().onComplete({
-      case Success(response) =>
-        val alert = document.getElementById("greeting-alert").asInstanceOf[HTMLElement]
-        alert.className = successAlertClasses
-        alert.getElementsByTagName("p").namedItem("greeting-output").textContent = response
-      case Failure(exception) =>
-        handleException(exception)
-    })
+    client.greeting
+      .invoke()
+      .onComplete({
+        case Success(response) =>
+          val alert = document.getElementById("greeting-alert").asInstanceOf[HTMLElement]
+          alert.className = successAlertClasses
+          alert.getElementsByTagName("p").namedItem("greeting-output").textContent = response
+        case Failure(exception) =>
+          handleException(exception)
+      })
   }
 
   private def helloOnClick(event: Event): Unit = {
     val name = document.getElementById("hello-name").asInstanceOf[Input].value
-    client.hello(name).invoke().onComplete({
-      case Success(response) =>
-        val alert = document.getElementById("hello-alert").asInstanceOf[HTMLElement]
-        alert.className = successAlertClasses
-        alert.getElementsByTagName("p").namedItem("hello-output").textContent = response
-      case Failure(exception) =>
-        handleException(exception)
-    })
+    client
+      .hello(name)
+      .invoke()
+      .onComplete({
+        case Success(response) =>
+          val alert = document.getElementById("hello-alert").asInstanceOf[HTMLElement]
+          alert.className = successAlertClasses
+          alert.getElementsByTagName("p").namedItem("hello-output").textContent = response
+        case Failure(exception) =>
+          handleException(exception)
+      })
   }
 
   private def pingOnClick(event: Event): Unit = {
-    val name = document.getElementById("ping-name").asInstanceOf[Input].value
+    val name    = document.getElementById("ping-name").asInstanceOf[Input].value
     val request = Ping(name)
-    client.ping.invoke(request).onComplete({
-      case Success(Pong(message)) =>
-        val alert = document.getElementById("ping-alert").asInstanceOf[HTMLElement]
-        alert.className = successAlertClasses
-        alert.getElementsByTagName("p").namedItem("ping-output").textContent = message
-      case Failure(exception) =>
-        handleException(exception)
-    })
+    client.ping
+      .invoke(request)
+      .onComplete({
+        case Success(Pong(message)) =>
+          val alert = document.getElementById("ping-alert").asInstanceOf[HTMLElement]
+          alert.className = successAlertClasses
+          alert.getElementsByTagName("p").namedItem("ping-output").textContent = message
+        case Failure(exception) =>
+          handleException(exception)
+      })
   }
 
   private def tickOnClick(event: Event): Unit = {
-    val message = document.getElementById("tick-message").asInstanceOf[Input].value
+    val message  = document.getElementById("tick-message").asInstanceOf[Input].value
     val interval = document.getElementById("tick-interval").asInstanceOf[Input].value
-    client.tick(interval.toInt).invoke(message).onComplete({
-      case Success(response) =>
-        val alert = document.getElementById("tick-alert").asInstanceOf[HTMLElement]
-        val output = alert.getElementsByTagName("p").namedItem("tick-output")
-        alert.className = successAlertClasses
-        response.runForeach(message => {
-          val badge = span(`class` := "badge badge-light mr-1")(message)
-          output.appendChild(badge.render)
-        })
-      case Failure(exception) =>
-        handleException(exception)
-    })
+    client
+      .tick(interval.toInt)
+      .invoke(message)
+      .onComplete({
+        case Success(response) =>
+          val alert  = document.getElementById("tick-alert").asInstanceOf[HTMLElement]
+          val output = alert.getElementsByTagName("p").namedItem("tick-output")
+          alert.className = successAlertClasses
+          response.runForeach(message => {
+            val badge = span(`class` := "badge badge-light mr-1")(message)
+            output.appendChild(badge.render)
+          })
+        case Failure(exception) =>
+          handleException(exception)
+      })
   }
 
   private def echoOnClick(event: Event): Unit = {
     val message = document.getElementById("echo-message").asInstanceOf[Input].value
-    val repeat = document.getElementById("echo-repeat").asInstanceOf[Input].value
-    val source = Source(List.fill(repeat.toInt)(message))
-    client.echo.invoke(source).onComplete({
-      case Success(response) =>
-        val alert = document.getElementById("echo-alert").asInstanceOf[HTMLElement]
-        val output = alert.getElementsByTagName("p").namedItem("echo-output")
-        alert.className = successAlertClasses
-        response.runForeach(message => {
-          val badge = span(`class` := "badge badge-light mr-1")(message)
-          output.appendChild(badge.render)
-        })
-      case Failure(exception) =>
-        handleException(exception)
-    })
+    val repeat  = document.getElementById("echo-repeat").asInstanceOf[Input].value
+    val source  = Source(List.fill(repeat.toInt)(message))
+    client.echo
+      .invoke(source)
+      .onComplete({
+        case Success(response) =>
+          val alert  = document.getElementById("echo-alert").asInstanceOf[HTMLElement]
+          val output = alert.getElementsByTagName("p").namedItem("echo-output")
+          alert.className = successAlertClasses
+          response.runForeach(message => {
+            val badge = span(`class` := "badge badge-light mr-1")(message)
+            output.appendChild(badge.render)
+          })
+        case Failure(exception) =>
+          handleException(exception)
+      })
   }
 
   def main(args: Array[String]): Unit = {
@@ -122,7 +134,9 @@ object Main {
               div(`class` := "card-body")(
                 p(`class` := "card-text")("A service call with a string path parameter."),
                 p(`class` := "card-text")(
-                  "The ", i("name"), " is used as a path parameter and the example service returns a string greeting using the name."
+                  "The ",
+                  i("name"),
+                  " is used as a path parameter and the example service returns a string greeting using the name."
                 ),
                 hr,
                 div(`class` := "form-group")(
@@ -142,7 +156,9 @@ object Main {
               div(`class` := "card-body")(
                 p(`class` := "card-text")("A service call with a serialized request and response message."),
                 p(`class` := "card-text")(
-                  "This example has the same result as the ", i("Hello"), " example, but uses serialized objects for the request and response instead of strings and path parameters."
+                  "This example has the same result as the ",
+                  i("Hello"),
+                  " example, but uses serialized objects for the request and response instead of strings and path parameters."
                 ),
                 hr,
                 div(`class` := "form-group")(
@@ -161,7 +177,13 @@ object Main {
               h5(`class` := "card-header")("Tick"),
               div(`class` := "card-body")(
                 p(`class` := "card-text")("A service call with a streaming response."),
-                p(`class` := "card-text")("The example service returns a source that outputs the ", i("message"), " every ", i("interval"), " milliseconds."),
+                p(`class` := "card-text")(
+                  "The example service returns a source that outputs the ",
+                  i("message"),
+                  " every ",
+                  i("interval"),
+                  " milliseconds."
+                ),
                 hr,
                 div(`class` := "form-group")(
                   label("Message"),
@@ -189,7 +211,11 @@ object Main {
               div(`class` := "card-body")(
                 p(`class` := "card-text")("A service call with a streaming request and response."),
                 p(`class` := "card-text")(
-                  "A source is created that outputs the ", i("message"), " a total of ", i("repeat"), " times. The source is streamed to the example service and the service echos back all the messages it receives as another source."
+                  "A source is created that outputs the ",
+                  i("message"),
+                  " a total of ",
+                  i("repeat"),
+                  " times. The source is streamed to the example service and the service echos back all the messages it receives as another source."
                 ),
                 hr,
                 div(`class` := "form-group")(
