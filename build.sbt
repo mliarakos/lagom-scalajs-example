@@ -27,7 +27,7 @@ lazy val `example-api` = crossProject(JSPlatform, JVMPlatform)
   .jsSettings(commonJsSettings: _*)
   .jsSettings(
     libraryDependencies ++= Seq(
-      "org.mliarakos.lagomjs" %%% "lagomjs-scaladsl-api" % "0.1.0-SNAPSHOT"
+      "com.github.mliarakos.lagomjs" %%% "lagomjs-scaladsl-api" % "0.1.0-SNAPSHOT"
     )
   )
 
@@ -47,9 +47,9 @@ lazy val `client-js` = project
   .settings(
     name := "client-js",
     libraryDependencies ++= Seq(
-      "org.mliarakos.lagomjs" %%% "lagomjs-scaladsl-client" % "0.1.0-SNAPSHOT",
-      "com.lihaoyi"           %%% "scalatags"               % "0.6.7",
-      "org.scala-js"          %%% "scalajs-dom"             % "0.9.7"
+      "com.github.mliarakos.lagomjs" %%% "lagomjs-scaladsl-client" % "0.1.0-SNAPSHOT",
+      "com.lihaoyi"                  %%% "scalatags"               % "0.6.7",
+      "org.scala-js"                 %%% "scalajs-dom"             % "0.9.7"
     ),
     scalaJSUseMainModuleInitializer := true
   )
