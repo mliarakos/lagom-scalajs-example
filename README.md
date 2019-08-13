@@ -1,12 +1,12 @@
 # Lagom ScalaJs Example
 
-An example of how to use the Lagom.js client prototype.
+An example of how to use the Lagom.js client.
 
 ### Getting Started
 
 The Lagom.js client is currently a prototype. You'll need to publish it locally to test it out.
 
-1. Clone the Lagom.js prototype Git repo:
+1. Clone the Lagom.js Git repo:
 
    ```
    git clone https://github.com/mliarakos/lagom.js.git
@@ -19,7 +19,7 @@ The Lagom.js client is currently a prototype. You'll need to publish it locally 
 1. Clone the example repo:
 
    ```
-   git clone -b lagomjs https://github.com/mliarakos/lagom-scalajs-example.git
+   git clone https://github.com/mliarakos/lagom-scalajs-example.git
    ```
 1. Start the example:
 
