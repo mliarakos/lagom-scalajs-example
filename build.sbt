@@ -74,8 +74,8 @@ lazy val `client-ui` = project
 lazy val `lagom-scalajs-example` = project
   .in(file("."))
   .settings(
-    publish := {},
-    publishLocal := {}
+    publish / skip := true,
+    publishLocal / skip := true
   )
   .aggregate(
     `example-api`.jvm,
