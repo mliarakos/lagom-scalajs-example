@@ -4,7 +4,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 scalaVersion in ThisBuild := "2.12.9"
 
 lazy val commonSettings = Seq(
-  organization := "org.mliarakos.lagom-scalajs-example",
+  organization := "com.github.mliarakos.lagom-scalajs-example",
   version := "0.1.0"
 )
 
