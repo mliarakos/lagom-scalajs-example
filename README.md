@@ -4,18 +4,6 @@ An example of how to use the Lagom.js client.
 
 ### Getting Started
 
-The Lagom.js client is currently a prototype. You'll need to publish it locally to test it out.
-
-1. Clone the Lagom.js Git repo:
-
-   ```
-   git clone https://github.com/mliarakos/lagom.js.git
-   ```
-1. Publish Lagom.js locally:
-
-   ```
-   sbt publishLocal
-   ```
 1. Clone the example repo:
 
    ```

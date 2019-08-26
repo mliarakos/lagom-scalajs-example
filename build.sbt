@@ -9,6 +9,7 @@ lazy val commonSettings = Seq(
 )
 
 lazy val commonJsSettings = commonSettings ++ Seq(
+  resolvers += Resolver.sonatypeRepo("snapshots"),
   scalacOptions += "-P:scalajs:sjsDefinedByDefault"
 )
 
