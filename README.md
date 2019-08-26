@@ -12,6 +12,7 @@ An example of how to use the Lagom.js client.
 1. Start the example:
 
    ```
+   cd lagom-scalajs-example
    sbt runAll
    ```
 1. Open http://localhost:53781 in a browser
