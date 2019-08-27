@@ -28,7 +28,7 @@ lazy val `example-api` = crossProject(JSPlatform, JVMPlatform)
   .jsSettings(commonJsSettings: _*)
   .jsSettings(
     libraryDependencies ++= Seq(
-      "com.github.mliarakos.lagomjs" %%% "lagomjs-scaladsl-api" % "0.1.0-SNAPSHOT"
+      "com.github.mliarakos.lagomjs" %%% "lagomjs-scaladsl-api" % "0.1.0-1.5.1-SNAPSHOT"
     )
   )
 
@@ -48,7 +48,7 @@ lazy val `client-js` = project
   .settings(
     name := "client-js",
     libraryDependencies ++= Seq(
-      "com.github.mliarakos.lagomjs" %%% "lagomjs-scaladsl-client" % "0.1.0-SNAPSHOT",
+      "com.github.mliarakos.lagomjs" %%% "lagomjs-scaladsl-client" % "0.1.0-1.5.1-SNAPSHOT",
       "com.lihaoyi"                  %%% "scalatags"               % "0.6.8",
       "org.scala-js"                 %%% "scalajs-dom"             % "0.9.7"
     ),
