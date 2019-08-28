@@ -1,17 +1,17 @@
 # Lagom ScalaJs Example
 
-An example of how to use the Lagom.js client.
+An example of how to use [lagom.js](https://github.com/mliarakos/lagom-js) to interact with a [Lagom](https://www.lagomframework.com/) service in JavaScript.
 
 ### Getting Started
 
 1. Clone the example repo:
 
-   ```
+   ```sh
    git clone https://github.com/mliarakos/lagom-scalajs-example.git
    ```
 1. Start the example:
 
-   ```
+   ```sh
    cd lagom-scalajs-example
    sbt runAll
    ```
@@ -19,11 +19,32 @@ An example of how to use the Lagom.js client.
 
 ### Project Structure
 
-The example is made up of four projects: `example-api`, `example-impl`, `client-js`, and `client-ui`. The example projects are the standard Lagom projects for a service api and service implementation. The only difference is that the `example-api` project is configured as ScalaJS cross-compilable. The Lagom.js client enables a standard Lagom service api to be cross-compilable without any changes. The example service provides five end points to demo the functionality of the Lagom.js client.
+The example is made up of four projects: `example-api`, `example-impl`, `client-js`, and `client-ui`. The example projects are the standard Lagom projects for a service api and service implementation. The only difference is that the `example-api` project is configured to be cross-compiled into JavaScript using Scala.js. Lagom.js enables a standard Lagom service api to be cross-compiled without any changes. The example service provides five end points to demo the functionality of the lagom.js service client.
 
-The client projects are the web front end that uses the Lagom ScalaJS client to interact with the example service. The `client-js` project is the core of the demo. It is a single page JavaScript app that uses the ScalaJS client of the example service. The `client-ui` project is a minimal Play app that simply serves the single page application. The Play app is not Lagom aware.
+The client projects are the web front end that uses lagom.js to interact with the example service. The `client-js` project is the core of the demo. It is a single page JavaScript app that uses the lagom.js client of the example service. The `client-ui` project is a minimal Play app that simply serves the single page application. The Play app is not Lagom aware.
 
-### Client Examples
+### Service Client
+
+A basic Lagom application is created using the `StaticServiceLocator`. For this demo the Lagom dev mode port of the example service is hard coded as the URI of the service.
+
+```scala
+class ExampleClientApplication(hostname: String = window.location.hostname)
+    extends LagomClientApplication("example-client")
+    with StaticServiceLocatorComponents {
+  override def staticServiceUri: URI = URI.create(s"http://$hostname:58440")
+}
+```
+
+The application is used to build a client for the example service:
+
+```scala
+  val application = new ExampleClientApplication()
+  val client      = application.serviceClient.implement[ExampleService]
+```
+
+The client can now be used to interact with the service. 
+
+### Examples
 
 #### Greeting
 
