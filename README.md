@@ -1,4 +1,4 @@
-# Lagom ScalaJs Example
+# Lagom Scala.js Example
 
 An example of how to use [lagom.js](https://github.com/mliarakos/lagom-js) to interact with a [Lagom](https://www.lagomframework.com/) service in JavaScript.
 
