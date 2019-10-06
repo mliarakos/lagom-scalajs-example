@@ -115,7 +115,7 @@ In the `client-js` project:
 ```scala
 val request = Ping(name)
 client.ping.invoke(request).onComplete({
-  case Success(Pong(message)) => //display message
+  case Success(Pong(message)) => // display message
   case Failure(exception) => // handle exception
 )}
 ```
