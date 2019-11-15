@@ -19,7 +19,7 @@ An example of how to use [lagom.js](https://github.com/mliarakos/lagom-js) to in
 
 ### Project Structure
 
-The example is made up of four projects: `example-api`, `example-impl`, `client-js`, and `client-ui`. The example projects are the standard Lagom projects for a service api and service implementation. The only difference is that the `example-api` project is configured to be cross-compiled into JavaScript using Scala.js. Lagom.js enables a standard Lagom service api to be cross-compiled without any changes. The example service provides five end points to demo the functionality of the lagom.js service client.
+The example is made up of four projects: `example-api`, `example-impl`, `client-js`, and `client-ui`. The example projects are the standard Lagom projects for a service api and service implementation. The only difference is that the `example-api` project is configured to be cross-compiled into JavaScript using Scala.js. Lagom.js enables a standard Lagom service api to be cross-compiled without any changes. The example service provides several end points to demo the functionality of the lagom.js service client.
 
 The client projects are the web front end that uses lagom.js to interact with the example service. The `client-js` project is the core of the demo. It is a single page JavaScript app that uses the lagom.js client of the example service. The `client-ui` project is a minimal Play app that simply serves the single page application. The Play app is not Lagom aware.
 
