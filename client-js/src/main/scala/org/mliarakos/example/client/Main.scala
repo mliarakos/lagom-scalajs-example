@@ -54,6 +54,22 @@ object Main {
       })
   }
 
+  private def randomOnClick(event: Event): Unit = {
+    val count = document.getElementById("random-count").asInstanceOf[Input].value
+    client
+      .random(count.toInt)
+      .invoke()
+      .onComplete({
+        case Success(response) =>
+          val numbers = response.mkString(", ")
+          val alert   = document.getElementById("random-alert").asInstanceOf[HTMLElement]
+          alert.className = successAlertClasses
+          alert.getElementsByTagName("p").namedItem("random-output").textContent = numbers
+        case Failure(exception) =>
+          handleException(exception)
+      })
+  }
+
   private def pingOnClick(event: Event): Unit = {
     val name    = document.getElementById("ping-name").asInstanceOf[Input].value
     val request = Ping(name)
@@ -148,6 +164,28 @@ object Main {
                 ),
                 div(id := "hello-alert", `class` := "d-none")(
                   p(id := "hello-output", `class` := "mb-0")("")
+                )
+              )
+            ),
+            div(`class` := "card mb-4")(
+              h5(`class` := "card-header")("Random"),
+              div(`class` := "card-body")(
+                p(`class` := "card-text")("A service call with a query parameter."),
+                p(`class` := "card-text")(
+                  "The example service returns ",
+                  i("count"),
+                  " random integers between 1 and 10."
+                ),
+                hr,
+                div(`class` := "form-group")(
+                  label("Count"),
+                  input(id := "random-count", `type` := "number", `class` := "form-control", value := "10")
+                ),
+                div(`class` := "form-group")(
+                  button(`class` := "btn btn-primary", onclick := randomOnClick _)("Random")
+                ),
+                div(id := "random-alert", `class` := "d-none")(
+                  p(id := "random-output", `class` := "mb-0")("")
                 )
               )
             ),

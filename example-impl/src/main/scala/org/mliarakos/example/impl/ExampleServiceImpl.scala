@@ -7,6 +7,7 @@ import org.mliarakos.example.api.{ExampleService, Pong}
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
+import scala.util.Random
 
 class ExampleServiceImpl extends ExampleService {
 
@@ -16,6 +17,11 @@ class ExampleServiceImpl extends ExampleService {
 
   override def hello(name: String) = ServerServiceCall { _ =>
     Future.successful(s"Hello $name!")
+  }
+
+  override def random(count: Int) = ServerServiceCall { _ =>
+    val numbers = Seq.fill(count)(Random.nextInt(10) + 1)
+    Future.successful(numbers)
   }
 
   override def ping = ServerServiceCall { request =>

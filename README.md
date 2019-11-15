@@ -84,6 +84,26 @@ client.hello(name).invoke().onComplete({
 )}
 ```
 
+#### Random
+
+This example calls the `random` end point of the service:
+
+```scala
+def random(count: Int): ServiceCall[NotUsed, Seq[Int]]
+```
+
+This is a service call that uses a query parameter. The service returns `count` random integers between 1 and 10.
+
+In the `client-js` project:
+
+```scala
+val count = 10
+client.random(count).invoke().onComplete({
+  case Success(response) => // display response
+  case Failure(exception) => // handle exception
+)}
+```
+
 #### Ping
 
 This example calls the `ping` end point of the service:
