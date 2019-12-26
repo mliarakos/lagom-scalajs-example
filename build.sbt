@@ -6,14 +6,17 @@ scalaVersion in ThisBuild := "2.12.9"
 
 lazy val commonSettings = Seq(
   organization := "com.github.mliarakos.lagom-scalajs-example",
-  version := "0.1.2"
+  version := "0.2.0-SNAPSHOT"
 )
 
 lazy val commonJsSettings = commonSettings ++ Seq(
   scalacOptions += "-P:scalajs:sjsDefinedByDefault"
 )
 
-val lagomjsVersion = s"0.1.1-${LagomVersion.current}"
+// TODO: use final version and remove snapshot resolver
+val lagomjsVersion = s"0.2.0-${LagomVersion.current}-SNAPSHOT"
+ThisBuild / resolvers += Resolver.sonatypeRepo("snapshots")
+
 val macwire        = "com.softwaremill.macwire" %% "macros" % "2.3.3" % Provided
 
 lazy val `example-api` = crossProject(JSPlatform, JVMPlatform)
