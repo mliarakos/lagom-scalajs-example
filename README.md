@@ -25,11 +25,11 @@ The client projects are the web front end that uses lagom.js to interact with th
 
 ### Service Client
 
-A basic Lagom application is created using the `StaticServiceLocator`. For this demo the Lagom dev mode port of the example service is hard coded as the URI of the service:
+A basic standalone Lagom application is created using the `StaticServiceLocator`. For this demo the Lagom dev mode port of the example service is hard coded as the URI of the service:
 
 ```scala
 class ExampleClientApplication(hostname: String = window.location.hostname)
-    extends LagomClientApplication("example-client")
+    extends StandaloneLagomClientFactory("example-client")
     with StaticServiceLocatorComponents {
   override def staticServiceUri: URI = URI.create(s"http://$hostname:58440")
 }
