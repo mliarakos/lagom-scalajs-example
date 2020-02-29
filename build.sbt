@@ -64,7 +64,7 @@ lazy val `client-ui` = project
   .settings(
     name := "client-ui",
     libraryDependencies ++= Seq(
-      "org.webjars" % "bootstrap" % "4.4.1",
+      "org.webjars" % "bootstrap" % "4.4.1-1",
       filters,
       macwire
     ),
