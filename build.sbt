@@ -51,7 +51,7 @@ lazy val `client-js` = project
     libraryDependencies ++= Seq(
       "com.github.mliarakos.lagomjs" %%% "lagomjs-scaladsl-client" % lagomjsVersion,
       "com.lihaoyi"                  %%% "scalatags"               % "0.8.2",
-      "org.scala-js"                 %%% "scalajs-dom"             % "0.9.8"
+      "org.scala-js"                 %%% "scalajs-dom"             % "1.0.0"
     ),
     scalaJSUseMainModuleInitializer := true
   )
