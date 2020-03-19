@@ -17,6 +17,12 @@ An example of how to use [lagom.js](https://github.com/mliarakos/lagom-js) to in
    ```
 1. Open http://localhost:53781 in a browser
 
+The example is configured for both Scala 2.12 and Scala 2.13, with Scala 2.12 as the default. To run using Scala 2.13:
+
+```sh
+sbt ++2.13.1 runAll
+```
+
 ### Project Structure
 
 The example is made up of four projects: `example-api`, `example-impl`, `client-js`, and `client-ui`. The example projects are the standard Lagom projects for a service api and service implementation. The only difference is that the `example-api` project is configured to be cross-compiled into JavaScript using Scala.js. Lagom.js enables a standard Lagom service api to be cross-compiled without any changes. The example service provides several end points to demo the functionality of the lagom.js service client.

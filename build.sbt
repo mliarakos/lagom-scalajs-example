@@ -2,9 +2,22 @@ import com.lightbend.lagom.core.LagomVersion
 import sbt.Keys.{scalaVersion, version}
 import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
-scalaVersion in ThisBuild := "2.12.10"
+val scalaVersions = Seq("2.12.10", "2.13.1")
 
-lazy val commonSettings = Seq(
+lazy val scalaSettings = Seq(
+  crossScalaVersions := scalaVersions,
+  scalaVersion := scalaVersions.head,
+  scalacOptions ++= Seq(
+    "-encoding",
+    "utf8",
+    "-deprecation",
+    "-feature",
+    "-unchecked",
+    "-Xlog-reflective-calls"
+  )
+)
+
+lazy val commonSettings = scalaSettings ++ Seq(
   organization := "com.github.mliarakos.lagom-scalajs-example",
   version := "0.3.0"
 )
