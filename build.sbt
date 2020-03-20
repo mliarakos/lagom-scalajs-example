@@ -26,7 +26,7 @@ lazy val commonJsSettings = commonSettings ++ Seq(
   scalacOptions += "-P:scalajs:sjsDefinedByDefault"
 )
 
-val lagomjsVersion = s"0.3.0-${LagomVersion.current}-SNAPSHOT"
+val lagomjsVersion = s"0.3.0-${LagomVersion.current}"
 val macwire        = "com.softwaremill.macwire" %% "macros" % "2.3.3" % Provided
 
 lazy val `example-api` = crossProject(JSPlatform, JVMPlatform)
