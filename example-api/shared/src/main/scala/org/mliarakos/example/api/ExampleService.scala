@@ -2,7 +2,6 @@ package org.mliarakos.example.api
 
 import akka.NotUsed
 import akka.stream.scaladsl.Source
-import akka.util.ByteString
 import com.lightbend.lagom.scaladsl.api._
 import com.lightbend.lagom.scaladsl.api.transport.Method
 
@@ -20,8 +19,6 @@ trait ExampleService extends Service {
 
   def echo: ServiceCall[Source[String, NotUsed], Source[String, NotUsed]]
 
-  def binary: ServiceCall[NotUsed, Source[ByteString, NotUsed]]
-
   override def descriptor: Descriptor = {
     import Service._
     named("example")
@@ -31,8 +28,7 @@ trait ExampleService extends Service {
         restCall(Method.GET, "/random?count", random _),
         restCall(Method.POST, "/ping", ping),
         pathCall("/tick/:interval", tick _),
-        pathCall("/echo", echo),
-        pathCall("/binary", binary)
+        pathCall("/echo", echo)
       )
       .withAcls(
         ServiceAcl.forMethodAndPathRegex(Method.OPTIONS, "/.*")
