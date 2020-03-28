@@ -19,6 +19,10 @@ abstract class ExampleApplication(context: LagomApplicationContext)
 
   override val httpFilters: Seq[EssentialFilter] = Seq(corsFilter)
 
+  // Alternate way to configure the ExceptionSerializer based on the environment instead of in the service definition
+  // override lazy val defaultExceptionSerializer: ExceptionSerializer =
+  //   wire[ExampleEnvironmentExceptionSerializer]
+
   override lazy val lagomServer: LagomServer =
     serverFor[ExampleService](wire[ExampleServiceImpl])
 }
