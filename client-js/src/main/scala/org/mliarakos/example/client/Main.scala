@@ -6,7 +6,7 @@ import org.mliarakos.example.api.{Ping, Pong}
 import org.scalajs.dom.ext.AjaxException
 import org.scalajs.dom.html.Input
 import org.scalajs.dom.raw.HTMLElement
-import org.scalajs.dom.{Event, console, document}
+import org.scalajs.dom.{Event, document}
 import scalatags.JsDom.all._
 
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
@@ -18,110 +18,135 @@ object Main {
 
   private val client              = ExampleClient.client
   private val successAlertClasses = "alert alert-success mb-0"
+  private val errorAlertClasses   = "alert alert-danger mb-0"
 
-  private def handleException(exception: Throwable): Unit = {
-    exception match {
-      case AjaxException(xhr) => console.error(xhr)
-      case _                  => console.error(exception.toString)
+  private def getInputValue(id: String): String = {
+    document.getElementById(id).asInstanceOf[Input].value
+  }
+
+  private def reset(element: HTMLElement): Unit = {
+    element.textContent = ""
+    for (i <- 0 until element.children.length) {
+      val node = element.children(i)
+      element.removeChild(node)
     }
+  }
+
+  private def getAlert(id: String): (HTMLElement, HTMLElement) = {
+    val alert  = document.getElementById(id).asInstanceOf[HTMLElement]
+    val output = alert.getElementsByTagName("p").namedItem("output").asInstanceOf[HTMLElement]
+    (alert, output)
+  }
+
+  private def displaySuccess(message: String, alertId: String): Unit = {
+    val (alert, output) = getAlert(alertId)
+    alert.className = successAlertClasses
+    output.textContent = message
+  }
+
+  private def displayException(exception: Throwable, alertId: String): Unit = {
+    val message = exception match {
+      case AjaxException(xhr) => xhr.responseText
+      case _                  => s"${exception.getClass.getSimpleName}: ${exception.getMessage}"
+    }
+
+    val (alert, output) = getAlert(alertId)
+    alert.className = errorAlertClasses
+    output.textContent = message
   }
 
   private def greetingOnClick(event: Event): Unit = {
     client.greeting
       .invoke()
       .onComplete({
-        case Success(response) =>
-          val alert = document.getElementById("greeting-alert").asInstanceOf[HTMLElement]
-          alert.className = successAlertClasses
-          alert.getElementsByTagName("p").namedItem("greeting-output").textContent = response
-        case Failure(exception) =>
-          handleException(exception)
+        case Success(response)  => displaySuccess(response, "greeting-alert")
+        case Failure(exception) => displayException(exception, "greeting-alert")
       })
   }
 
   private def helloOnClick(event: Event): Unit = {
-    val name = document.getElementById("hello-name").asInstanceOf[Input].value
+    val name = getInputValue("hello-name")
     client
       .hello(name)
       .invoke()
       .onComplete({
-        case Success(response) =>
-          val alert = document.getElementById("hello-alert").asInstanceOf[HTMLElement]
-          alert.className = successAlertClasses
-          alert.getElementsByTagName("p").namedItem("hello-output").textContent = response
-        case Failure(exception) =>
-          handleException(exception)
+        case Success(response)  => displaySuccess(response, "hello-alert")
+        case Failure(exception) => displayException(exception, "hello-alert")
       })
   }
 
   private def randomOnClick(event: Event): Unit = {
-    val count = document.getElementById("random-count").asInstanceOf[Input].value
+    val count = getInputValue("random-count")
     client
       .random(count.toInt)
       .invoke()
       .onComplete({
         case Success(response) =>
           val numbers = response.mkString(", ")
-          val alert   = document.getElementById("random-alert").asInstanceOf[HTMLElement]
-          alert.className = successAlertClasses
-          alert.getElementsByTagName("p").namedItem("random-output").textContent = numbers
+          displaySuccess(numbers, "random-alert")
         case Failure(exception) =>
-          handleException(exception)
+          displayException(exception, "random-alert")
       })
   }
 
   private def pingOnClick(event: Event): Unit = {
-    val name    = document.getElementById("ping-name").asInstanceOf[Input].value
+    val name    = getInputValue("ping-name")
     val request = Ping(name)
     client.ping
       .invoke(request)
       .onComplete({
-        case Success(Pong(message)) =>
-          val alert = document.getElementById("ping-alert").asInstanceOf[HTMLElement]
-          alert.className = successAlertClasses
-          alert.getElementsByTagName("p").namedItem("ping-output").textContent = message
-        case Failure(exception) =>
-          handleException(exception)
+        case Success(Pong(message)) => displaySuccess(message, "ping-alert")
+        case Failure(exception)     => displayException(exception, "ping-alert")
       })
   }
 
   private def tickOnClick(event: Event): Unit = {
-    val message  = document.getElementById("tick-message").asInstanceOf[Input].value
-    val interval = document.getElementById("tick-interval").asInstanceOf[Input].value
+    val message  = getInputValue("tick-message")
+    val interval = getInputValue("tick-interval")
     client
       .tick(interval.toInt)
       .invoke(message)
       .onComplete({
-        case Success(response) =>
-          val alert  = document.getElementById("tick-alert").asInstanceOf[HTMLElement]
-          val output = alert.getElementsByTagName("p").namedItem("tick-output")
-          alert.className = successAlertClasses
-          response.runForeach(message => {
-            val badge = span(`class` := "badge badge-light mr-1")(message)
-            output.appendChild(badge.render)
-          })
+        case Success(source) =>
+          val (alert, output) = getAlert("tick-alert")
+          reset(output)
+          source
+            .runForeach(message => {
+              alert.className = successAlertClasses
+              val badge = span(`class` := "badge badge-light mr-1")(message)
+              output.appendChild(badge.render)
+            })
+            .onComplete({
+              case Success(_)         =>
+              case Failure(exception) => displayException(exception, "tick-alert")
+            })
         case Failure(exception) =>
-          handleException(exception)
+          displayException(exception, "tick-alert")
       })
   }
 
   private def echoOnClick(event: Event): Unit = {
-    val message = document.getElementById("echo-message").asInstanceOf[Input].value
-    val repeat  = document.getElementById("echo-repeat").asInstanceOf[Input].value
+    val message = getInputValue("echo-message")
+    val repeat  = getInputValue("echo-repeat")
     val source  = Source(List.fill(repeat.toInt)(message))
     client.echo
       .invoke(source)
       .onComplete({
-        case Success(response) =>
-          val alert  = document.getElementById("echo-alert").asInstanceOf[HTMLElement]
-          val output = alert.getElementsByTagName("p").namedItem("echo-output")
-          alert.className = successAlertClasses
-          response.runForeach(message => {
-            val badge = span(`class` := "badge badge-light mr-1")(message)
-            output.appendChild(badge.render)
-          })
+        case Success(source) =>
+          val (alert, output) = getAlert("echo-alert")
+          reset(output)
+          source
+            .runForeach(message => {
+              alert.className = successAlertClasses
+              val badge = span(`class` := "badge badge-light mr-1")(message)
+              output.appendChild(badge.render)
+            })
+            .onComplete({
+              case Success(_)         =>
+              case Failure(exception) => displayException(exception, "echo-alert")
+            })
         case Failure(exception) =>
-          handleException(exception)
+          displayException(exception, "echo-alert")
       })
   }
 
@@ -141,7 +166,7 @@ object Main {
                   button(`class` := "btn btn-primary", onclick := greetingOnClick _)("Greeting")
                 ),
                 div(id := "greeting-alert", `class` := "d-none")(
-                  p(id := "greeting-output", `class` := "mb-0")("")
+                  p(name := "output", `class` := "mb-0")("")
                 )
               )
             ),
@@ -163,7 +188,7 @@ object Main {
                   button(`class` := "btn btn-primary", onclick := helloOnClick _)("Hello")
                 ),
                 div(id := "hello-alert", `class` := "d-none")(
-                  p(id := "hello-output", `class` := "mb-0")("")
+                  p(name := "output", `class` := "mb-0")("")
                 )
               )
             ),
@@ -174,7 +199,9 @@ object Main {
                 p(`class` := "card-text")(
                   "The example service returns ",
                   i("count"),
-                  " random integers between 1 and 10."
+                  " random integers between 1 and 10 and will throw a custom exception if ",
+                  i("count"),
+                  " is not a positive integer."
                 ),
                 hr,
                 div(`class` := "form-group")(
@@ -185,7 +212,7 @@ object Main {
                   button(`class` := "btn btn-primary", onclick := randomOnClick _)("Random")
                 ),
                 div(id := "random-alert", `class` := "d-none")(
-                  p(id := "random-output", `class` := "mb-0")("")
+                  p(name := "output", `class` := "mb-0")("")
                 )
               )
             ),
@@ -207,7 +234,7 @@ object Main {
                   button(`class` := "btn btn-primary", onclick := pingOnClick _)("Ping")
                 ),
                 div(id := "ping-alert", `class` := "d-none")(
-                  p(id := "ping-output", `class` := "mb-0")("")
+                  p(name := "output", `class` := "mb-0")("")
                 )
               )
             ),
@@ -220,7 +247,9 @@ object Main {
                   i("message"),
                   " every ",
                   i("interval"),
-                  " milliseconds."
+                  " milliseconds and will throw a custom exception if ",
+                  i("interval"),
+                  " is not a positive integer."
                 ),
                 hr,
                 div(`class` := "form-group")(
@@ -240,7 +269,7 @@ object Main {
                   button(`class` := "btn btn-primary", onclick := tickOnClick _)("Tick")
                 ),
                 div(id := "tick-alert", `class` := "d-none")(
-                  p(id := "tick-output", `class` := "mb-0")("")
+                  p(name := "output", `class` := "mb-0")("")
                 )
               )
             ),
@@ -268,7 +297,7 @@ object Main {
                   button(`class` := "btn btn-primary", onclick := echoOnClick _)("Echo")
                 ),
                 div(id := "echo-alert", `class` := "d-none")(
-                  p(id := "echo-output", `class` := "mb-0")("")
+                  p(name := "output", `class` := "mb-0")("")
                 )
               )
             )

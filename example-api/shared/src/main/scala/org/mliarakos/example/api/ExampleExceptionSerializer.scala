@@ -1,0 +1,5 @@
+package org.mliarakos.example.api
+
+import org.mliarakos.example.api.ExampleEnvironmentExceptionSerializer.devEnvironment
+
+object ExampleExceptionSerializer extends ExampleEnvironmentExceptionSerializer(devEnvironment)

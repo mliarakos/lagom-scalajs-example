@@ -110,6 +110,8 @@ client.random(count).invoke().onComplete({
 )}
 ```
 
+The service will throw a [custom exception](#custom-service-exceptions) if `count` is not a positive integer.
+
 #### Ping
 
 This example calls the `ping` end point of the service:
@@ -162,11 +164,13 @@ In the `client-js` project:
 val message = "Lagom"
 val interval = 500
 client.tick(interval).invoke(message).onComplete({
-  case Success(response) => 
-    response.runForeach(message => /* display message */)
+  case Success(source) => 
+    source.runForeach(message => /* display message */)
   case Failure(exception) => // handle exception
 })
 ```
+
+The service will throw a [custom exception](#custom-service-exceptions) if `interval` is not a positive integer.
 
 #### Echo
 
@@ -185,8 +189,33 @@ val message = "Lagom"
 val repeat = 10
 val source = Source(List.fill(repeat)(message))
 client.echo.invoke(source).onComplete({
-  case Success(response) => 
-    response.runForeach(message => /* display message */)
+  case Success(source) => 
+    source.runForeach(message => /* display message */)
   case Failure(exception) => // handle exception
 })
 ```
+
+### Custom Service Exceptions
+
+The service uses a custom exception that can be sent to and handled by the client. It is the `NonPositiveIntegerException`, which is used by several examples that require positive integer parameters. As described in the [Lagom documentation](https://www.lagomframework.com/documentation/latest/scala/ServiceErrorHandling.html), the exception extends `TransportException` and the service uses a custom `ExceptionSerializer`.
+
+The service provides two exception serializers in the service API: `ExampleExceptionSerializer` (the default) and `ExampleEnvironmentExceptionSerializer` (an alternate). Both extend the Lagom built-in `DefaultExceptionSerializer`, which controls the error detail level based on the environment (production vs. development). The difference between them is how they select the environment and where they are configured in the application.
+
+The `ExampleExceptionSerializer` is configured in the service definition:
+
+```scala
+trait ExampleService extends Service {
+  override def descriptor: Descriptor = {
+    import Service._
+    named("example")
+      .withCalls(
+        // call definitions
+      )
+      .withExceptionSerializer(ExampleExceptionSerializer)
+  }
+}
+```
+
+This configures both the server and client at the same time. However, configuring the exception serializer in the service definition requires a static environment choice. The `ExampleExceptionSerializer` chooses the development environment because this is a demo. However, this should not be done in production to prevent leaking error details.
+
+The `ExampleEnvironmentExceptionSerializer` is configured in the application definition and uses the environment of the application, allowing for a dynamic environment definition. However, since there are two application definitions (one for the server and one for the client), it must be configured in two separate places. The `ExampleApplication` in `example-impl` and the `ExampleClient` in `client-js` show how `ExampleEnvironmentExceptionSerializer` would be configured. 

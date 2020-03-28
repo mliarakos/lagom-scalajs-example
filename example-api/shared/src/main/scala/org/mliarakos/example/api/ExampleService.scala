@@ -34,6 +34,7 @@ trait ExampleService extends Service {
         ServiceAcl.forMethodAndPathRegex(Method.OPTIONS, "/.*")
       )
       .withAutoAcl(true)
+      .withExceptionSerializer(ExampleExceptionSerializer)
   }
 
 }

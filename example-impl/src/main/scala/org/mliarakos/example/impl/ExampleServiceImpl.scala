@@ -3,7 +3,7 @@ package org.mliarakos.example.impl
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import com.lightbend.lagom.scaladsl.server.ServerServiceCall
-import org.mliarakos.example.api.{ExampleService, Pong}
+import org.mliarakos.example.api.{ExampleService, NonPositiveIntegerException, Pong}
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -20,8 +20,12 @@ class ExampleServiceImpl extends ExampleService {
   }
 
   override def random(count: Int) = ServerServiceCall { _ =>
-    val numbers = Seq.fill(count)(Random.nextInt(10) + 1)
-    Future.successful(numbers)
+    if (count < 1) {
+      Future.failed(NonPositiveIntegerException(count))
+    } else {
+      val numbers = Seq.fill(count)(Random.nextInt(10) + 1)
+      Future.successful(numbers)
+    }
   }
 
   override def ping = ServerServiceCall { request =>
@@ -30,8 +34,13 @@ class ExampleServiceImpl extends ExampleService {
   }
 
   override def tick(interval: Int) = ServerServiceCall { message =>
-    val source = Source.tick(interval.milliseconds, interval.milliseconds, message).mapMaterializedValue(_ => NotUsed)
-    Future.successful(source)
+    if (interval < 1) {
+      Future.failed(NonPositiveIntegerException(interval))
+    } else {
+      val duration = interval.milliseconds
+      val source   = Source.tick(duration, duration, message).mapMaterializedValue(_ => NotUsed)
+      Future.successful(source)
+    }
   }
 
   override def echo = ServerServiceCall { source =>
