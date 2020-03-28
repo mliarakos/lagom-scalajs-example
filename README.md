@@ -195,7 +195,7 @@ client.echo.invoke(source).onComplete({
 })
 ```
 
-#### Custom Service Exceptions
+### Custom Service Exceptions
 
 The service uses a custom exception that can be sent to and handled by the client. It is the `NonPositiveIntegerException`, which is used by several examples that require positive integer parameters. As described in the [Lagom documentation](https://www.lagomframework.com/documentation/latest/scala/ServiceErrorHandling.html), the exception extends `TransportException` and the service uses a custom `ExceptionSerializer`.
 
@@ -216,6 +216,6 @@ trait ExampleService extends Service {
 }
 ```
 
-This configures both the server and client to support the exception. However, configuring the exception serializer in the service definition requires a static environment choice. The `ExampleExceptionSerializer` chooses the development environment because this is a demo. However, this should not be done in production to prevent leaking error details.
+This configures both the server and client at the same time. However, configuring the exception serializer in the service definition requires a static environment choice. The `ExampleExceptionSerializer` chooses the development environment because this is a demo. However, this should not be done in production to prevent leaking error details.
 
-The `ExampleEnvironmentExceptionSerializer` is configured in the application definition and uses the environment of the application, allowing for a dynamic environment definition. However, since there are two application definitions (one of the server and one for the client), it must be configured in two separate places. The `ExampleApplication` in `example-impl` and the `ExampleClient` in `client-js` show how `ExampleEnvironmentExceptionSerializer` would be configured. 
+The `ExampleEnvironmentExceptionSerializer` is configured in the application definition and uses the environment of the application, allowing for a dynamic environment definition. However, since there are two application definitions (one for the server and one for the client), it must be configured in two separate places. The `ExampleApplication` in `example-impl` and the `ExampleClient` in `client-js` show how `ExampleEnvironmentExceptionSerializer` would be configured. 
