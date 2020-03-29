@@ -17,6 +17,14 @@ import scala.util.{Failure, Success}
 
 object Main {
 
+  private val GREETING_ID = "greeting"
+  private val HELLO_ID    = "hello"
+  private val RANDOM_ID   = "random"
+  private val PING_ID     = "ping"
+  private val TICK_ID     = "tick"
+  private val ECHO_ID     = "echo"
+  private val BINARY_ID   = "binary"
+
   private implicit val materializer: Materializer = ExampleClient.application.materializer
   private val client                              = ExampleClient.client
 
@@ -52,8 +60,8 @@ object Main {
     client.greeting
       .invoke()
       .onComplete({
-        case Success(response)  => displaySuccess("greeting", response)
-        case Failure(exception) => displayException("greeting", exception)
+        case Success(response)  => displaySuccess(GREETING_ID, response)
+        case Failure(exception) => displayException(GREETING_ID, exception)
       })
   }
 
@@ -63,8 +71,8 @@ object Main {
       .hello(name)
       .invoke()
       .onComplete({
-        case Success(response)  => displaySuccess("hello", response)
-        case Failure(exception) => displayException("hello", exception)
+        case Success(response)  => displaySuccess(HELLO_ID, response)
+        case Failure(exception) => displayException(HELLO_ID, exception)
       })
   }
 
@@ -76,9 +84,9 @@ object Main {
       .onComplete({
         case Success(response) =>
           val numbers = response.mkString(", ")
-          displaySuccess("random", numbers)
+          displaySuccess(RANDOM_ID, numbers)
         case Failure(exception) =>
-          displayException("random", exception)
+          displayException(RANDOM_ID, exception)
       })
   }
 
@@ -88,8 +96,8 @@ object Main {
     client.ping
       .invoke(request)
       .onComplete({
-        case Success(Pong(message)) => displaySuccess("ping", message)
-        case Failure(exception)     => displayException("ping", exception)
+        case Success(Pong(message)) => displaySuccess(PING_ID, message)
+        case Failure(exception)     => displayException(PING_ID, exception)
       })
   }
 
@@ -101,7 +109,7 @@ object Main {
       .invoke(message)
       .onComplete({
         case Success(source) =>
-          val (element, alert) = prepareSuccess("tick")
+          val (element, alert) = prepareSuccess(TICK_ID)
           source
             .runForeach(message => {
               if (!element.contains(alert)) element.appendChild(alert)
@@ -110,10 +118,10 @@ object Main {
             })
             .onComplete({
               case Success(_)         =>
-              case Failure(exception) => displayException("tick", exception)
+              case Failure(exception) => displayException(TICK_ID, exception)
             })
         case Failure(exception) =>
-          displayException("tick", exception)
+          displayException(TICK_ID, exception)
       })
   }
 
@@ -125,7 +133,7 @@ object Main {
       .invoke(source)
       .onComplete({
         case Success(source) =>
-          val (element, alert) = prepareSuccess("echo")
+          val (element, alert) = prepareSuccess(ECHO_ID)
           source
             .runForeach(message => {
               if (!element.contains(alert)) element.appendChild(alert)
@@ -134,10 +142,10 @@ object Main {
             })
             .onComplete({
               case Success(_)         =>
-              case Failure(exception) => displayException("echo", exception)
+              case Failure(exception) => displayException(ECHO_ID, exception)
             })
         case Failure(exception) =>
-          displayException("echo", exception)
+          displayException(ECHO_ID, exception)
       })
   }
 
@@ -146,7 +154,7 @@ object Main {
       .invoke()
       .onComplete({
         case Success(source) =>
-          val (element, alert) = prepareSuccess("binary")
+          val (element, alert) = prepareSuccess(BINARY_ID)
           source
             .runForeach(message => {
               if (!element.contains(alert)) element.appendChild(alert)
@@ -155,10 +163,10 @@ object Main {
             })
             .onComplete({
               case Success(_)         =>
-              case Failure(exception) => displayException("binary", exception)
+              case Failure(exception) => displayException(BINARY_ID, exception)
             })
         case Failure(exception) =>
-          displayException("binary", exception)
+          displayException(BINARY_ID, exception)
       })
   }
 
@@ -170,7 +178,7 @@ object Main {
             h1(`class` := "mb-4")("Lagom ScalaJS Examples"),
             div(`class` := "card mb-4")(
               h5(`class` := "card-header")("Greeting"),
-              div(id := "greeting", `class` := "card-body")(
+              div(id := GREETING_ID, `class` := "card-body")(
                 p(`class` := "card-text")("A service call with no path parameters or request message."),
                 p(`class` := "card-text")("The example service simply returns a static greeting."),
                 hr,
@@ -181,7 +189,7 @@ object Main {
             ),
             div(`class` := "card mb-4")(
               h5(`class` := "card-header")("Hello"),
-              div(id := "hello", `class` := "card-body")(
+              div(id := HELLO_ID, `class` := "card-body")(
                 p(`class` := "card-text")("A service call with a string path parameter."),
                 p(`class` := "card-text")(
                   "The ",
@@ -200,7 +208,7 @@ object Main {
             ),
             div(`class` := "card mb-4")(
               h5(`class` := "card-header")("Random"),
-              div(id := "random", `class` := "card-body")(
+              div(id := RANDOM_ID, `class` := "card-body")(
                 p(`class` := "card-text")("A service call with a query parameter."),
                 p(`class` := "card-text")(
                   "The example service returns ",
@@ -221,7 +229,7 @@ object Main {
             ),
             div(`class` := "card mb-4")(
               h5(`class` := "card-header")("Ping"),
-              div(id := "ping", `class` := "card-body")(
+              div(id := PING_ID, `class` := "card-body")(
                 p(`class` := "card-text")("A service call with a serialized request and response message."),
                 p(`class` := "card-text")(
                   "This example has the same result as the ",
@@ -240,7 +248,7 @@ object Main {
             ),
             div(`class` := "card mb-4")(
               h5(`class` := "card-header")("Tick"),
-              div(id := "tick", `class` := "card-body")(
+              div(id := TICK_ID, `class` := "card-body")(
                 p(`class` := "card-text")("A service call with a streaming response."),
                 p(`class` := "card-text")(
                   "The example service returns a source that outputs the ",
@@ -272,7 +280,7 @@ object Main {
             ),
             div(`class` := "card mb-4")(
               h5(`class` := "card-header")("Echo"),
-              div(id := "echo", `class` := "card-body")(
+              div(id := ECHO_ID, `class` := "card-body")(
                 p(`class` := "card-text")("A service call with a streaming request and response."),
                 p(`class` := "card-text")(
                   "A source is created that outputs the ",
@@ -297,7 +305,7 @@ object Main {
             ),
             div(`class` := "card mb-4")(
               h5(`class` := "card-header")("Binary"),
-              div(id := "binary", `class` := "card-body")(
+              div(id := BINARY_ID, `class` := "card-body")(
                 p(`class` := "card-text")("A service call with a streaming binary response."),
                 p(`class` := "card-text")("The example service returns a source that outputs random binary data."),
                 hr,
