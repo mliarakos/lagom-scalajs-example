@@ -38,8 +38,7 @@ class ExampleServiceImpl extends ExampleService {
     if (interval < 1) {
       Future.failed(NonPositiveIntegerException(interval))
     } else {
-      val duration = interval.milliseconds
-      val source   = Source.tick(duration, duration, message).mapMaterializedValue(_ => NotUsed)
+      val source = Source.tick(Duration.Zero, interval.milliseconds, message).mapMaterializedValue(_ => NotUsed)
       Future.successful(source)
     }
   }
@@ -56,7 +55,7 @@ class ExampleServiceImpl extends ExampleService {
     }
 
     val source = Source
-      .tick(0.second, 1.second, NotUsed)
+      .tick(Duration.Zero, 1.second, NotUsed)
       .map(_ => nextByteString)
       .mapMaterializedValue(_ => NotUsed)
     Future.successful(source)
