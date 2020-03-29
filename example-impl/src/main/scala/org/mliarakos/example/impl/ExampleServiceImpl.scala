@@ -2,6 +2,7 @@ package org.mliarakos.example.impl
 
 import akka.NotUsed
 import akka.stream.scaladsl.Source
+import akka.util.ByteString
 import com.lightbend.lagom.scaladsl.server.ServerServiceCall
 import org.mliarakos.example.api.{ExampleService, NonPositiveIntegerException, Pong}
 
@@ -44,6 +45,20 @@ class ExampleServiceImpl extends ExampleService {
   }
 
   override def echo = ServerServiceCall { source =>
+    Future.successful(source)
+  }
+
+  override def binary = ServerServiceCall { _ =>
+    val bytes = Array.ofDim[Byte](16)
+    def nextByteString: ByteString = {
+      Random.nextBytes(bytes)
+      ByteString.apply(bytes)
+    }
+
+    val source = Source
+      .tick(0.second, 1.second, NotUsed)
+      .map(_ => nextByteString)
+      .mapMaterializedValue(_ => NotUsed)
     Future.successful(source)
   }
 
