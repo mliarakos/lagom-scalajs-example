@@ -4,6 +4,7 @@ import java.util.Base64
 
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
+import com.lightbend.lagom.scaladsl.api.transport.TransportException
 import org.mliarakos.example.api.{Ping, Pong}
 import org.scalajs.dom.ext.AjaxException
 import org.scalajs.dom.html.Input
@@ -17,52 +18,42 @@ import scala.util.{Failure, Success}
 object Main {
 
   private implicit val materializer: Materializer = ExampleClient.application.materializer
-
-  private val client              = ExampleClient.client
-  private val successAlertClasses = "alert alert-success mb-0"
-  private val errorAlertClasses   = "alert alert-danger mb-0"
+  private val client                              = ExampleClient.client
 
   private def getInputValue(id: String): String = {
     document.getElementById(id).asInstanceOf[Input].value
   }
 
-  private def reset(element: HTMLElement): Unit = {
-    element.textContent = ""
-    for (i <- 0 until element.children.length) {
-      val node = element.children(i)
-      element.removeChild(node)
-    }
+  private def displaySuccess(id: String, message: String): Unit = {
+    val element = document.getElementById(id).asInstanceOf[HTMLElement]
+    val alert   = div(`class` := "alert alert-success")(message).render
+    element.appendChild(alert)
   }
 
-  private def getAlert(id: String): (HTMLElement, HTMLElement) = {
-    val alert  = document.getElementById(id).asInstanceOf[HTMLElement]
-    val output = alert.getElementsByTagName("p").namedItem("output").asInstanceOf[HTMLElement]
-    (alert, output)
+  private def prepareSuccess(id: String): (HTMLElement, HTMLElement) = {
+    val element = document.getElementById(id).asInstanceOf[HTMLElement]
+    val alert   = div(`class` := "alert alert-success").render
+
+    (element, alert)
   }
 
-  private def displaySuccess(message: String, alertId: String): Unit = {
-    val (alert, output) = getAlert(alertId)
-    alert.className = successAlertClasses
-    output.textContent = message
-  }
-
-  private def displayException(exception: Throwable, alertId: String): Unit = {
+  private def displayException(id: String, exception: Throwable): Unit = {
     val message = exception match {
-      case AjaxException(xhr) => xhr.responseText
-      case _                  => s"${exception.getClass.getSimpleName}: ${exception.getMessage}"
+      case AjaxException(xhr)    => xhr.responseText
+      case e: TransportException => s"${e.exceptionMessage.name}: ${e.exceptionMessage.detail} (${e.errorCode})"
+      case _                     => s"${exception.getClass.getSimpleName}: ${exception.getMessage}"
     }
-
-    val (alert, output) = getAlert(alertId)
-    alert.className = errorAlertClasses
-    output.textContent = message
+    val element = document.getElementById(id).asInstanceOf[HTMLElement]
+    val alert   = div(`class` := "alert alert-danger")(message).render
+    element.appendChild(alert)
   }
 
   private def greetingOnClick(event: Event): Unit = {
     client.greeting
       .invoke()
       .onComplete({
-        case Success(response)  => displaySuccess(response, "greeting-alert")
-        case Failure(exception) => displayException(exception, "greeting-alert")
+        case Success(response)  => displaySuccess("greeting", response)
+        case Failure(exception) => displayException("greeting", exception)
       })
   }
 
@@ -72,8 +63,8 @@ object Main {
       .hello(name)
       .invoke()
       .onComplete({
-        case Success(response)  => displaySuccess(response, "hello-alert")
-        case Failure(exception) => displayException(exception, "hello-alert")
+        case Success(response)  => displaySuccess("hello", response)
+        case Failure(exception) => displayException("hello", exception)
       })
   }
 
@@ -85,9 +76,9 @@ object Main {
       .onComplete({
         case Success(response) =>
           val numbers = response.mkString(", ")
-          displaySuccess(numbers, "random-alert")
+          displaySuccess("random", numbers)
         case Failure(exception) =>
-          displayException(exception, "random-alert")
+          displayException("random", exception)
       })
   }
 
@@ -97,8 +88,8 @@ object Main {
     client.ping
       .invoke(request)
       .onComplete({
-        case Success(Pong(message)) => displaySuccess(message, "ping-alert")
-        case Failure(exception)     => displayException(exception, "ping-alert")
+        case Success(Pong(message)) => displaySuccess("ping", message)
+        case Failure(exception)     => displayException("ping", exception)
       })
   }
 
@@ -110,20 +101,19 @@ object Main {
       .invoke(message)
       .onComplete({
         case Success(source) =>
-          val (alert, output) = getAlert("tick-alert")
-          reset(output)
+          val (element, alert) = prepareSuccess("tick")
           source
             .runForeach(message => {
-              alert.className = successAlertClasses
-              val badge = span(`class` := "badge badge-light mr-1")(message)
-              output.appendChild(badge.render)
+              if (!element.contains(alert)) element.appendChild(alert)
+              val badge = span(`class` := "badge badge-light mr-1")(message).render
+              alert.appendChild(badge)
             })
             .onComplete({
               case Success(_)         =>
-              case Failure(exception) => displayException(exception, "tick-alert")
+              case Failure(exception) => displayException("tick", exception)
             })
         case Failure(exception) =>
-          displayException(exception, "tick-alert")
+          displayException("tick", exception)
       })
   }
 
@@ -135,20 +125,19 @@ object Main {
       .invoke(source)
       .onComplete({
         case Success(source) =>
-          val (alert, output) = getAlert("echo-alert")
-          reset(output)
+          val (element, alert) = prepareSuccess("echo")
           source
             .runForeach(message => {
-              alert.className = successAlertClasses
-              val badge = span(`class` := "badge badge-light mr-1")(message)
-              output.appendChild(badge.render)
+              if (!element.contains(alert)) element.appendChild(alert)
+              val badge = span(`class` := "badge badge-light mr-1")(message).render
+              alert.appendChild(badge)
             })
             .onComplete({
               case Success(_)         =>
-              case Failure(exception) => displayException(exception, "echo-alert")
+              case Failure(exception) => displayException("echo", exception)
             })
         case Failure(exception) =>
-          displayException(exception, "echo-alert")
+          displayException("echo", exception)
       })
   }
 
@@ -157,17 +146,19 @@ object Main {
       .invoke()
       .onComplete({
         case Success(source) =>
+          val (element, alert) = prepareSuccess("binary")
           source
             .runForeach(message => {
+              if (!element.contains(alert)) element.appendChild(alert)
               val base64Message = Base64.getEncoder.encodeToString(message.toArray)
-              displaySuccess(base64Message, "binary-alert")
+              alert.textContent = base64Message
             })
             .onComplete({
               case Success(_)         =>
-              case Failure(exception) => displayException(exception, "binary-alert")
+              case Failure(exception) => displayException("binary", exception)
             })
         case Failure(exception) =>
-          displayException(exception, "binary-alert")
+          displayException("binary", exception)
       })
   }
 
@@ -179,21 +170,18 @@ object Main {
             h1(`class` := "mb-4")("Lagom ScalaJS Examples"),
             div(`class` := "card mb-4")(
               h5(`class` := "card-header")("Greeting"),
-              div(`class` := "card-body")(
+              div(id := "greeting", `class` := "card-body")(
                 p(`class` := "card-text")("A service call with no path parameters or request message."),
                 p(`class` := "card-text")("The example service simply returns a static greeting."),
                 hr,
                 div(`class` := "form-group")(
                   button(`class` := "btn btn-primary", onclick := greetingOnClick _)("Greeting")
-                ),
-                div(id := "greeting-alert", `class` := "d-none")(
-                  p(name := "output", `class` := "mb-0")("")
                 )
               )
             ),
             div(`class` := "card mb-4")(
               h5(`class` := "card-header")("Hello"),
-              div(`class` := "card-body")(
+              div(id := "hello", `class` := "card-body")(
                 p(`class` := "card-text")("A service call with a string path parameter."),
                 p(`class` := "card-text")(
                   "The ",
@@ -207,15 +195,12 @@ object Main {
                 ),
                 div(`class` := "form-group")(
                   button(`class` := "btn btn-primary", onclick := helloOnClick _)("Hello")
-                ),
-                div(id := "hello-alert", `class` := "d-none")(
-                  p(name := "output", `class` := "mb-0")("")
                 )
               )
             ),
             div(`class` := "card mb-4")(
               h5(`class` := "card-header")("Random"),
-              div(`class` := "card-body")(
+              div(id := "random", `class` := "card-body")(
                 p(`class` := "card-text")("A service call with a query parameter."),
                 p(`class` := "card-text")(
                   "The example service returns ",
@@ -231,15 +216,12 @@ object Main {
                 ),
                 div(`class` := "form-group")(
                   button(`class` := "btn btn-primary", onclick := randomOnClick _)("Random")
-                ),
-                div(id := "random-alert", `class` := "d-none")(
-                  p(name := "output", `class` := "mb-0")("")
                 )
               )
             ),
             div(`class` := "card mb-4")(
               h5(`class` := "card-header")("Ping"),
-              div(`class` := "card-body")(
+              div(id := "ping", `class` := "card-body")(
                 p(`class` := "card-text")("A service call with a serialized request and response message."),
                 p(`class` := "card-text")(
                   "This example has the same result as the ",
@@ -253,15 +235,12 @@ object Main {
                 ),
                 div(`class` := "form-group")(
                   button(`class` := "btn btn-primary", onclick := pingOnClick _)("Ping")
-                ),
-                div(id := "ping-alert", `class` := "d-none")(
-                  p(name := "output", `class` := "mb-0")("")
                 )
               )
             ),
             div(`class` := "card mb-4")(
               h5(`class` := "card-header")("Tick"),
-              div(`class` := "card-body")(
+              div(id := "tick", `class` := "card-body")(
                 p(`class` := "card-text")("A service call with a streaming response."),
                 p(`class` := "card-text")(
                   "The example service returns a source that outputs the ",
@@ -288,15 +267,12 @@ object Main {
                 ),
                 div(`class` := "form-group")(
                   button(`class` := "btn btn-primary", onclick := tickOnClick _)("Tick")
-                ),
-                div(id := "tick-alert", `class` := "d-none")(
-                  p(name := "output", `class` := "mb-0")("")
                 )
               )
             ),
             div(`class` := "card mb-4")(
               h5(`class` := "card-header")("Echo"),
-              div(`class` := "card-body")(
+              div(id := "echo", `class` := "card-body")(
                 p(`class` := "card-text")("A service call with a streaming request and response."),
                 p(`class` := "card-text")(
                   "A source is created that outputs the ",
@@ -316,23 +292,17 @@ object Main {
                 ),
                 div(`class` := "form-group")(
                   button(`class` := "btn btn-primary", onclick := echoOnClick _)("Echo")
-                ),
-                div(id := "echo-alert", `class` := "d-none")(
-                  p(name := "output", `class` := "mb-0")("")
                 )
               )
             ),
             div(`class` := "card mb-4")(
               h5(`class` := "card-header")("Binary"),
-              div(`class` := "card-body")(
+              div(id := "binary", `class` := "card-body")(
                 p(`class` := "card-text")("A service call with a streaming binary response."),
                 p(`class` := "card-text")("The example service returns a source that outputs random binary data."),
                 hr,
                 div(`class` := "form-group")(
                   button(`class` := "btn btn-primary", onclick := binaryOnClick _)("Binary")
-                ),
-                div(id := "binary-alert", `class` := "d-none")(
-                  p(name := "output", `class` := "mb-0")("")
                 )
               )
             )
