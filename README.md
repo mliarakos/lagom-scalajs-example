@@ -195,6 +195,26 @@ client.echo.invoke(source).onComplete({
 })
 ```
 
+#### Binary
+
+This example calls the `binary` end point of the service:
+
+```scala
+def binary: ServiceCall[NotUsed, Source[ByteString, NotUsed]]
+```
+
+This is a service call that has a streaming binary response. The service returns a `Source` that outputs random binary data. The data is streamed as binary in the underlying WebSocket.
+
+In the `client-js` project:
+
+```scala
+client.binary.invoke().onComplete({
+  case Success(source) => 
+    source.runForeach(message => /* display message */)
+  case Failure(exception) => // handle exception
+})
+```
+
 ### Custom Service Exceptions
 
 The service uses a custom exception that can be sent to and handled by the client. It is the `NonPositiveIntegerException`, which is used by several examples that require positive integer parameters. As described in the [Lagom documentation](https://www.lagomframework.com/documentation/latest/scala/ServiceErrorHandling.html), the exception extends `TransportException` and the service uses a custom `ExceptionSerializer`.

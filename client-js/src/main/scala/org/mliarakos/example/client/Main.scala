@@ -1,5 +1,7 @@
 package org.mliarakos.example.client
 
+import java.util.Base64
+
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import org.mliarakos.example.api.{Ping, Pong}
@@ -150,6 +152,25 @@ object Main {
       })
   }
 
+  private def binaryOnClick(event: Event): Unit = {
+    client.binary
+      .invoke()
+      .onComplete({
+        case Success(source) =>
+          source
+            .runForeach(message => {
+              val base64Message = Base64.getEncoder.encodeToString(message.toArray)
+              displaySuccess(base64Message, "binary-alert")
+            })
+            .onComplete({
+              case Success(_)         =>
+              case Failure(exception) => displayException(exception, "binary-alert")
+            })
+        case Failure(exception) =>
+          displayException(exception, "binary-alert")
+      })
+  }
+
   def main(args: Array[String]): Unit = {
     val content =
       div(`class` := "container")(
@@ -297,6 +318,20 @@ object Main {
                   button(`class` := "btn btn-primary", onclick := echoOnClick _)("Echo")
                 ),
                 div(id := "echo-alert", `class` := "d-none")(
+                  p(name := "output", `class` := "mb-0")("")
+                )
+              )
+            ),
+            div(`class` := "card mb-4")(
+              h5(`class` := "card-header")("Binary"),
+              div(`class` := "card-body")(
+                p(`class` := "card-text")("A service call with a streaming binary response."),
+                p(`class` := "card-text")("The example service returns a source that outputs random binary data."),
+                hr,
+                div(`class` := "form-group")(
+                  button(`class` := "btn btn-primary", onclick := binaryOnClick _)("Binary")
+                ),
+                div(id := "binary-alert", `class` := "d-none")(
                   p(name := "output", `class` := "mb-0")("")
                 )
               )
