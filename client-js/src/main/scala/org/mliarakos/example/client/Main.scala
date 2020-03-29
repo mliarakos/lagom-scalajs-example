@@ -107,21 +107,17 @@ object Main {
     client
       .tick(interval.toInt)
       .invoke(message)
+      .flatMap(source => {
+        val (element, alert) = prepareSuccess(TICK_ID)
+        source.runForeach(message => {
+          if (!element.contains(alert)) element.appendChild(alert)
+          val badge = span(`class` := "badge badge-light mr-1")(message).render
+          alert.appendChild(badge)
+        })
+      })
       .onComplete({
-        case Success(source) =>
-          val (element, alert) = prepareSuccess(TICK_ID)
-          source
-            .runForeach(message => {
-              if (!element.contains(alert)) element.appendChild(alert)
-              val badge = span(`class` := "badge badge-light mr-1")(message).render
-              alert.appendChild(badge)
-            })
-            .onComplete({
-              case Success(_)         =>
-              case Failure(exception) => displayException(TICK_ID, exception)
-            })
-        case Failure(exception) =>
-          displayException(TICK_ID, exception)
+        case Success(_)         =>
+        case Failure(exception) => displayException(TICK_ID, exception)
       })
   }
 
@@ -131,42 +127,34 @@ object Main {
     val source  = Source(List.fill(repeat.toInt)(message))
     client.echo
       .invoke(source)
+      .flatMap(source => {
+        val (element, alert) = prepareSuccess(ECHO_ID)
+        source.runForeach(message => {
+          if (!element.contains(alert)) element.appendChild(alert)
+          val badge = span(`class` := "badge badge-light mr-1")(message).render
+          alert.appendChild(badge)
+        })
+      })
       .onComplete({
-        case Success(source) =>
-          val (element, alert) = prepareSuccess(ECHO_ID)
-          source
-            .runForeach(message => {
-              if (!element.contains(alert)) element.appendChild(alert)
-              val badge = span(`class` := "badge badge-light mr-1")(message).render
-              alert.appendChild(badge)
-            })
-            .onComplete({
-              case Success(_)         =>
-              case Failure(exception) => displayException(ECHO_ID, exception)
-            })
-        case Failure(exception) =>
-          displayException(ECHO_ID, exception)
+        case Success(_)         =>
+        case Failure(exception) => displayException(ECHO_ID, exception)
       })
   }
 
   private def binaryOnClick(event: Event): Unit = {
     client.binary
       .invoke()
+      .flatMap(source => {
+        val (element, alert) = prepareSuccess(BINARY_ID)
+        source.runForeach(message => {
+          if (!element.contains(alert)) element.appendChild(alert)
+          val base64Message = Base64.getEncoder.encodeToString(message.toArray)
+          alert.textContent = base64Message
+        })
+      })
       .onComplete({
-        case Success(source) =>
-          val (element, alert) = prepareSuccess(BINARY_ID)
-          source
-            .runForeach(message => {
-              if (!element.contains(alert)) element.appendChild(alert)
-              val base64Message = Base64.getEncoder.encodeToString(message.toArray)
-              alert.textContent = base64Message
-            })
-            .onComplete({
-              case Success(_)         =>
-              case Failure(exception) => displayException(BINARY_ID, exception)
-            })
-        case Failure(exception) =>
-          displayException(BINARY_ID, exception)
+        case Success(_)         =>
+        case Failure(exception) => displayException(BINARY_ID, exception)
       })
   }
 
