@@ -66,9 +66,9 @@ In the `client-js` project the service client is used the same way you would in 
 
 ```scala
 client.greeting.invoke().onComplete({
-  case Success(message) => // display message
+  case Success(message)   => // display message
   case Failure(exception) => // handle exception
-)}
+})
 ``` 
 
 #### Hello
@@ -85,9 +85,9 @@ In the `client-js` project:
 
 ```scala
 client.hello(name).invoke().onComplete({
-  case Success(message) => // display message
+  case Success(message)   => // display message
   case Failure(exception) => // handle exception
-)}
+})
 ```
 
 #### Random
@@ -105,9 +105,9 @@ In the `client-js` project:
 ```scala
 val count = 10
 client.random(count).invoke().onComplete({
-  case Success(response) => // display response
+  case Success(response)  => // display response
   case Failure(exception) => // handle exception
-)}
+})
 ```
 
 The service will throw a [custom exception](#custom-service-exceptions) if `count` is not a positive integer.
@@ -144,8 +144,8 @@ In the `client-js` project:
 val request = Ping(name)
 client.ping.invoke(request).onComplete({
   case Success(Pong(message)) => // display message
-  case Failure(exception) => // handle exception
-)}
+  case Failure(exception)     => // handle exception
+})
 ```
 
 #### Tick
@@ -163,11 +163,14 @@ In the `client-js` project:
 ```scala
 val message = "Lagom"
 val interval = 500
-client.tick(interval).invoke(message).onComplete({
-  case Success(source) => 
+client.tick(interval).invoke(message)
+  .flatMap(source => {
     source.runForeach(message => /* display message */)
-  case Failure(exception) => // handle exception
-})
+  })
+  .onComplete({
+    case Success(_)         => // handle completion of the source
+    case Failure(exception) => // handle exception
+  })
 ```
 
 The service will throw a [custom exception](#custom-service-exceptions) if `interval` is not a positive integer.
@@ -188,11 +191,14 @@ In the `client-js` project:
 val message = "Lagom"
 val repeat = 10
 val source = Source(List.fill(repeat)(message))
-client.echo.invoke(source).onComplete({
-  case Success(source) => 
+client.echo.invoke(source)
+  .flatMap(source => {
     source.runForeach(message => /* display message */)
-  case Failure(exception) => // handle exception
-})
+  })
+  .onComplete({
+    case Success(_)         => // handle completion of the source
+    case Failure(exception) => // handle exception
+  })
 ```
 
 #### Binary
@@ -208,11 +214,14 @@ This is a service call that has a streaming binary response. The service returns
 In the `client-js` project:
 
 ```scala
-client.binary.invoke().onComplete({
-  case Success(source) => 
+client.binary.invoke()
+  .flatMap(source => {
     source.runForeach(message => /* display message */)
-  case Failure(exception) => // handle exception
-})
+  })
+  .onComplete({
+    case Success(_)         => // handle completion of the source
+    case Failure(exception) => // handle exception
+  })
 ```
 
 ### Custom Service Exceptions
