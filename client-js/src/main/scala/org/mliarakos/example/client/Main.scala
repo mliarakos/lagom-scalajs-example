@@ -47,7 +47,7 @@ object Main {
 
   private def displayException(id: String, exception: Throwable): Unit = {
     val message = exception match {
-      case AjaxException(xhr)    => xhr.responseText
+      case e: AjaxException      => s"${e.getClass.getSimpleName}: ${e.xhr.responseText}"
       case e: TransportException => s"${e.exceptionMessage.name}: ${e.exceptionMessage.detail} (${e.errorCode})"
       case _                     => s"${exception.getClass.getSimpleName}: ${exception.getMessage}"
     }
