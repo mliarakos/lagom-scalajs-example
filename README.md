@@ -58,6 +58,8 @@ This example calls the `greeting` end point of the service:
 
 ```scala
 def greeting: ServiceCall[NotUsed, String]
+
+restCall(Method.GET, "/greeting", greeting)
 ```
 
 This is a service call that uses no path parameters or request messages and returns a basic String response. The service simply returns a static greeting.
@@ -77,6 +79,8 @@ This example calls the `hello` end point of the service:
 
 ```scala
 def hello(name: String): ServiceCall[NotUsed, String]
+
+restCall(Method.GET, "/hello/:name", hello _)
 ```
 
 This is a service call that uses a String path parameter. The service returns a greeting using the user provided name parameter.
@@ -96,6 +100,8 @@ This example calls the `random` end point of the service:
 
 ```scala
 def random(count: Int): ServiceCall[NotUsed, Seq[Int]]
+
+restCall(Method.GET, "/random?count", random _)
 ```
 
 This is a service call that uses a query parameter. The service returns `count` random integers between 1 and 10.
@@ -118,6 +124,8 @@ This example calls the `ping` end point of the service:
 
 ```scala
 def ping: ServiceCall[Ping, Pong]
+
+restCall(Method.POST, "/ping", ping)
 ```
 
 This is a service call that uses serialized request and response messages. The messages are basic wrappers around Strings:
@@ -154,6 +162,8 @@ This example calls the `tick` end point of the service:
 
 ```scala
 def tick(interval: Int): ServiceCall[String, Source[String, NotUsed]]
+
+pathCall("/tick/:interval", tick _)
 ```
 
 This is a service call that has a streaming response. The service returns a `Source` that outputs the provided user message every `interval` milliseconds.
@@ -181,6 +191,8 @@ This example calls the `echo` end point of the service:
 
 ```scala
 def echo: ServiceCall[Source[String, NotUsed], Source[String, NotUsed]]
+
+pathCall("/echo", echo)
 ```
 
 This is a service call that uses a streaming request and response. The client creates a `Source` that repeats a message for a user defined number of times. The `Source` is streamed to the service and the service returns another `Source` that echos back all the messages.
@@ -207,6 +219,8 @@ This example calls the `binary` end point of the service:
 
 ```scala
 def binary: ServiceCall[NotUsed, Source[ByteString, NotUsed]]
+
+pathCall("/binary", binary)
 ```
 
 This is a service call that has a streaming binary response. The service returns a `Source` that outputs random binary data. The data is streamed as binary in the underlying WebSocket.
