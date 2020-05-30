@@ -2,6 +2,7 @@ package org.mliarakos.example.client
 
 import java.util.Base64
 
+import akka.NotUsed
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import com.lightbend.lagom.scaladsl.api.transport.TransportException
@@ -12,6 +13,7 @@ import org.scalajs.dom.raw.HTMLElement
 import org.scalajs.dom.{Event, document}
 import scalatags.JsDom.all._
 
+import scala.concurrent.duration.{Duration, MILLISECONDS}
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.util.{Failure, Success}
 
@@ -123,17 +125,19 @@ object Main {
 
   private def echoOnClick(event: Event): Unit = {
     val message = getInputValue("echo-message")
-    val repeat  = getInputValue("echo-repeat")
-    val source  = Source(List.fill(repeat.toInt)(message))
+    val limit   = getInputValue("echo-limit").toInt
+    val source  = Source.tick(Duration.Zero, Duration(500, MILLISECONDS), message).mapMaterializedValue(_ => NotUsed)
     client.echo
       .invoke(source)
       .flatMap(source => {
         val (element, alert) = prepareSuccess(ECHO_ID)
-        source.runForeach(message => {
-          if (!element.contains(alert)) element.appendChild(alert)
-          val badge = span(`class` := "badge badge-light mr-1")(message).render
-          alert.appendChild(badge)
-        })
+        source
+          .take(limit)
+          .runForeach(message => {
+            if (!element.contains(alert)) element.appendChild(alert)
+            val badge = span(`class` := "badge badge-light mr-1")(message).render
+            alert.appendChild(badge)
+          })
       })
       .onComplete({
         case Success(_)         =>
@@ -271,11 +275,11 @@ object Main {
               div(id := ECHO_ID, `class` := "card-body")(
                 p(`class` := "card-text")("A service call with a streaming request and response."),
                 p(`class` := "card-text")(
-                  "A source is created that outputs the ",
+                  "A source is created that continuously repeats the ",
                   i("message"),
-                  " a total of ",
-                  i("repeat"),
-                  " times. The source is streamed to the example service and the service echos back all the messages it receives as another source."
+                  ". The source is streamed to the example service and the service returns another source that echos back all the messages. The returned source is stopped after ",
+                  i("limit"),
+                  " messages."
                 ),
                 hr,
                 div(`class` := "form-group")(
@@ -283,8 +287,8 @@ object Main {
                   input(id := "echo-message", `type` := "text", `class` := "form-control", value := "Lagom")
                 ),
                 div(`class` := "form-group")(
-                  label("Repeat"),
-                  input(id := "echo-repeat", `type` := "number", `class` := "form-control", min := "1", value := "10")
+                  label("Limit"),
+                  input(id := "echo-limit", `type` := "number", `class` := "form-control", min := "1", value := "10")
                 ),
                 div(`class` := "form-group")(
                   button(`class` := "btn btn-primary", onclick := echoOnClick _)("Echo")

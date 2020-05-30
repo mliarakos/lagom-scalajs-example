@@ -195,17 +195,17 @@ def echo: ServiceCall[Source[String, NotUsed], Source[String, NotUsed]]
 pathCall("/echo", echo)
 ```
 
-This is a service call that uses a streaming request and response. The client creates a `Source` that repeats a message for a user defined number of times. The `Source` is streamed to the service and the service returns another `Source` that echos back all the messages.
+This is a service call that uses a streaming request and response. The client creates a `Source` that continuously repeats the provided user message. The `Source` is streamed to the service and the service returns another `Source` that echos back all the messages. The client stops the returned source after `limit` messages.
 
 In the `client-js` project:
 
 ```scala
 val message = "Lagom"
-val repeat = 10
-val source = Source(List.fill(repeat)(message))
+val limit = 10
+val source = Source.tick(Duration.Zero, Duration(500, MILLISECONDS), message).mapMaterializedValue(_ => NotUsed)
 client.echo.invoke(source)
   .flatMap(source => {
-    source.runForeach(message => /* display message */)
+    source.take(limit).runForeach(message => /* display message */)
   })
   .onComplete({
     case Success(_)         => // handle completion of the source
