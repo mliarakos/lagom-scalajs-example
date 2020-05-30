@@ -19,7 +19,7 @@ lazy val scalaSettings = Seq(
 
 lazy val commonSettings = scalaSettings ++ Seq(
   organization := "com.github.mliarakos.lagom-scalajs-example",
-  version := "0.3.3"
+  version := "0.3.4-SNAPSHOT"
 )
 
 lazy val commonJsSettings = commonSettings ++ Seq(
