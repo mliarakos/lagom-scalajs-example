@@ -19,7 +19,7 @@ lazy val scalaSettings = Seq(
 
 lazy val commonSettings = scalaSettings ++ Seq(
   organization := "com.github.mliarakos.lagom-scalajs-example",
-  version := "0.4.2-SNAPSHOT"
+  version := "0.4.2"
 )
 
 lazy val commonJsSettings = commonSettings
@@ -61,8 +61,8 @@ lazy val `client-js` = project
     name := "client-js",
     libraryDependencies ++= Seq(
       "com.github.mliarakos.lagomjs" %%% "lagomjs-scaladsl-client" % lagomjsVersion,
-      "com.lihaoyi"                  %%% "scalatags"               % "0.9.1",
-      "org.scala-js"                 %%% "scalajs-dom"             % "1.0.0"
+      "com.lihaoyi"                  %%% "scalatags"               % "0.9.2",
+      "org.scala-js"                 %%% "scalajs-dom"             % "1.1.0"
     ),
     scalaJSUseMainModuleInitializer := true
   )
