@@ -19,13 +19,13 @@ lazy val scalaSettings = Seq(
 
 lazy val commonSettings = scalaSettings ++ Seq(
   organization := "com.github.mliarakos.lagom-scalajs-example",
-  version := "0.4.1-SNAPSHOT"
+  version := "0.4.1"
 )
 
 lazy val commonJsSettings = commonSettings
 
 val lagomjsVersion = s"0.4.0-${LagomVersion.current}"
-val macwire        = "com.softwaremill.macwire" %% "macros" % "2.3.3" % Provided
+val macwire        = "com.softwaremill.macwire" %% "macros" % "2.3.6" % Provided
 
 lazy val `example-api` = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Full)
@@ -75,7 +75,7 @@ lazy val `client-ui` = project
   .settings(
     name := "client-ui",
     libraryDependencies ++= Seq(
-      "org.webjars" % "bootstrap" % "4.5.0",
+      "org.webjars" % "bootstrap" % "4.5.2",
       filters,
       macwire
     ),
