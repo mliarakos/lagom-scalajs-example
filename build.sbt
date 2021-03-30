@@ -2,6 +2,10 @@ import com.lightbend.lagom.core.LagomVersion
 import sbt.Keys.{scalaVersion, version}
 import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
+// Disable Cassandra and Kafka for performance since they are not used
+lagomCassandraEnabled in ThisBuild := false
+lagomKafkaEnabled in ThisBuild := false
+
 val scalaVersions = Seq("2.12.10", "2.13.1")
 
 lazy val scalaSettings = Seq(
@@ -19,13 +23,13 @@ lazy val scalaSettings = Seq(
 
 lazy val commonSettings = scalaSettings ++ Seq(
   organization := "com.github.mliarakos.lagom-scalajs-example",
-  version := "0.4.3-SNAPSHOT"
+  version := "0.5.0"
 )
 
 lazy val commonJsSettings = commonSettings
 
-val lagomjsVersion = s"0.4.0-${LagomVersion.current}"
-val macwire        = "com.softwaremill.macwire" %% "macros" % "2.3.6" % Provided
+val lagomjsVersion = s"0.5.0-${LagomVersion.current}"
+val macwire        = "com.softwaremill.macwire" %% "macros" % "2.3.7" % Provided
 
 lazy val `example-api` = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Full)
@@ -75,7 +79,7 @@ lazy val `client-ui` = project
   .settings(
     name := "client-ui",
     libraryDependencies ++= Seq(
-      "org.webjars" % "bootstrap" % "4.5.2",
+      "org.webjars" % "bootstrap" % "4.6.0-1",
       filters,
       macwire
     ),
