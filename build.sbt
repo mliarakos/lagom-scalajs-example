@@ -6,7 +6,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 lagomCassandraEnabled in ThisBuild := false
 lagomKafkaEnabled in ThisBuild := false
 
-val scalaVersions = Seq("2.12.10", "2.13.1")
+val scalaVersions = Seq("2.12.13", "2.13.4")
 
 lazy val scalaSettings = Seq(
   crossScalaVersions := scalaVersions,
@@ -23,7 +23,7 @@ lazy val scalaSettings = Seq(
 
 lazy val commonSettings = scalaSettings ++ Seq(
   organization := "com.github.mliarakos.lagom-scalajs-example",
-  version := "0.5.1-SNAPSHOT"
+  version := "0.5.1"
 )
 
 lazy val commonJsSettings = commonSettings
